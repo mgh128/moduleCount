@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!--<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>-->
+<script src="vue.min.js"></script>
+<script type="text/javascript" src="dist/bwip-js-min.js"></script>
+<script language="javascript">
+
+var s4tPrimaryIdentifiers=[
+{"code":'01',"label":'GTIN',"grouping":'PrimaryIdentifiers',"datatype":"xsd:string","definition":'Global Trade Item Number (GTIN)',"example":"01234567890128","percentEncoded":false,"pattern":"[0-9]{14}"}
+];
+
+var countryCodes={"AF":"Afghanistan","AX":"Åland Islands","AL":"Albania","DZ":"Algeria","AS":"American Samoa","AD":"Andorra","AO":"Angola","AI":"Anguilla","AQ":"Antarctica","AG":"Antigua and Barbuda","AR":"Argentina","AM":"Armenia","AW":"Aruba","AU":"Australia","AT":"Austria","AZ":"Azerbaijan","BS":"Bahamas","BH":"Bahrain","BD":"Bangladesh","BB":"Barbados","BY":"Belarus","BE":"Belgium","BZ":"Belize","BJ":"Benin","BM":"Bermuda","BT":"Bhutan","BT":"Bhutan","BO":"Bolivia (Plurinational State of)","BO":"Bolivia (Plurinational State of)","BQ":"Bonaire, Sint Eustatius and Saba","BA":"Bosnia and Herzegovina","BW":"Botswana","BV":"Bouvet Island","BR":"Brazil","IO":"British Indian Ocean Territory","BN":"Brunei Darussalam","BG":"Bulgaria","BF":"Burkina Faso","BI":"Burundi","KH":"Cambodia","CM":"Cameroon","CA":"Canada","CV":"Cabo Verde","KY":"Cayman Islands","CF":"Central African Republic","TD":"Chad","CL":"Chile","CL":"Chile","CN":"China","CX":"Christmas Island","CC":"Cocos (Keeling) Islands","CO":"Colombia","CO":"Colombia","KM":"Comoros","CG":"Congo","CD":"Congo (Democratic Republic of the)","CK":"Cook Islands","CR":"Costa Rica","CI":"Côte d'Ivoire","HR":"Croatia","CU":"Cuba","CU":"Cuba","CW":"Curaçao","CY":"Cyprus","CZ":"Czech Republic","DK":"Denmark","DJ":"Djibouti","DM":"Dominica","DO":"Dominican Republic","EC":"Ecuador","EG":"Egypt","SV":"El Salvador","SV":"El Salvador","GQ":"Equatorial Guinea","ER":"Eritrea","EE":"Estonia","ET":"Ethiopia","FK":"Falkland Islands (Malvinas)","FO":"Faroe Islands","FJ":"Fiji","FI":"Finland","FR":"France","GF":"French Guiana","PF":"French Polynesia","TF":"French Southern Territories","GA":"Gabon","GM":"Gambia","GE":"Georgia","DE":"Germany","GH":"Ghana","GI":"Gibraltar","GR":"Greece","GL":"Greenland","GD":"Grenada","GP":"Guadeloupe","GU":"Guam","GT":"Guatemala","GG":"Guernsey","GN":"Guinea","GW":"Guinea-Bissau","GY":"Guyana","HT":"Haiti","HT":"Haiti","HM":"Heard Island and McDonald Islands","VA":"Holy See","HN":"Honduras","HK":"Hong Kong","HU":"Hungary","IS":"Iceland","IN":"India","ID":"Indonesia","IR":"Iran (Islamic Republic of)","IQ":"Iraq","IE":"Ireland","IM":"Isle of Man","IL":"Israel","IT":"Italy","JM":"Jamaica","JP":"Japan","JE":"Jersey","JO":"Jordan","KZ":"Kazakhstan","KE":"Kenya","KI":"Kiribati","KP":"Korea (Democratic People's Republic of)","KR":"Korea (Republic of)","KW":"Kuwait","KG":"Kyrgyzstan","LA":"Lao People's Democratic Republic","LV":"Latvia","LB":"Lebanon","LS":"Lesotho","LS":"Lesotho","LR":"Liberia","LY":"Libya","LI":"Liechtenstein","LT":"Lithuania","LU":"Luxembourg","MO":"Macao","MK":"Macedonia (the former Yugoslav Republic of)","MG":"Madagascar","MW":"Malawi","MY":"Malaysia","MV":"Maldives","ML":"Mali","MT":"Malta","MH":"Marshall Islands","MQ":"Martinique","MR":"Mauritania","MU":"Mauritius","YT":"Mayotte","MX":"Mexico","MX":"Mexico","FM":"Micronesia (Federated States of)","MD":"Moldova (Republic of)","MC":"Monaco","MN":"Mongolia","ME":"Montenegro","MS":"Montserrat","MA":"Morocco","MZ":"Mozambique","MM":"Myanmar","NA":"Namibia","NA":"Namibia","NR":"Nauru","NP":"Nepal","NL":"Netherlands","NC":"New Caledonia","NZ":"New Zealand","NI":"Nicaragua","NE":"Niger","NG":"Nigeria","NU":"Niue","NF":"Norfolk Island","MP":"Northern Mariana Islands","NO":"Norway","OM":"Oman","PK":"Pakistan","PW":"Palau","PS":"Palestine, State of","PA":"Panama","PA":"Panama","PG":"Papua New Guinea","PY":"Paraguay","PE":"Peru","PH":"Philippines","PN":"Pitcairn","PL":"Poland","PT":"Portugal","PR":"Puerto Rico","QA":"Qatar","RE":"Réunion","RO":"Romania","RU":"Russian Federation","RW":"Rwanda","BL":"Saint Barthélemy","SH":"Saint Helena, Ascension and Tristan da Cunha","KN":"Saint Kitts and Nevis","LC":"Saint Lucia","MF":"Saint Martin (French part)","PM":"Saint Pierre and Miquelon","VC":"Saint Vincent and the Grenadines","WS":"Samoa","SM":"San Marino","ST":"Sao Tome and Principe","SA":"Saudi Arabia","SN":"Senegal","RS":"Serbia","SC":"Seychelles","SL":"Sierra Leone","SG":"Singapore","SX":"Sint Maarten (Dutch part)","SK":"Slovakia","SI":"Slovenia","SB":"Solomon Islands","SO":"Somalia","ZA":"South Africa","GS":"South Georgia and the South Sandwich Islands","SS":"South Sudan","ES":"Spain","LK":"Sri Lanka","SD":"Sudan","SR":"Suriname","SJ":"Svalbard and Jan Mayen","SZ":"Swaziland","SE":"Sweden","CH":"Switzerland","SY":"Syrian Arab Republic","TW":"Taiwan, Province of China","TJ":"Tajikistan","TZ":"Tanzania, United Republic of","TH":"Thailand","TL":"Timor-Leste","TG":"Togo","TK":"Tokelau","TO":"Tonga","TT":"Trinidad and Tobago","TN":"Tunisia","TR":"Turkey","TM":"Turkmenistan","TC":"Turks and Caicos Islands","TV":"Tuvalu","UG":"Uganda","UA":"Ukraine","AE":"United Arab Emirates","GB":"United Kingdom of Great Britain and Northern Ireland","US":"United States of America","UM":"United States Minor Outlying Islands","UY":"Uruguay","UY":"Uruguay","UZ":"Uzbekistan","VU":"Vanuatu","VE":"Venezuela (Bolivarian Republic of)","VN":"Viet Nam","VG":"Virgin Islands (British)","VI":"Virgin Islands (U.S.)","WF":"Wallis and Futuna","EH":"Western Sahara","YE":"Yemen","ZM":"Zambia","ZW":"Zimbabwe"};
+
+var s4tTerms=[
+{"code":'10',"label":'Batch/Lot',"grouping":'KeyQualifiers',"datatype":"xsd:string","definition":'Batch/Lot ID',"example":"ABC123","percentEncoded":false},
+{"code":'21',"label":'Serial number',"grouping":'KeyQualifiers',"datatype":"xsd:string","definition":'Serial number',"example":"987XYZ","percentEncoded":false},
+{"code":'17',"label":'Expiration date',"grouping":'Dates',"datatype":"xsd:date","definition":"Expiration date","example":"2021-10-31","percentEncoded":false}
+];
+
+
+var demoAddresses=[
+{"label":"JP - GS1 Japan","4300":"GS1 Japan","4301":"ヨッシー","4302":"9F, Shin Aoyama Bldg., East","4303":"1-1-1, Minami Aoyama","4304":"Minato-ku","4305":"Tokyo","420":"107-0062","4307":"JP"},
+{"label":"FR - GS1 France","4300":"GS1 France","4302":"21, boulevard Haussmann","4305":"Paris","420":"75009","4307":"FR"},
+{"label":"FR - Transport LAMBOLLEY","4300":"Transport LAMBOLLEY","4302":"Zone Industrielle des feuilles, Zone A","4303":"21 Rue des entrepôts","4305":"SEYSSUEL","420":"38200","4307":"FR"},
+{"label":"IE - GS1 Ireland","4300":"GS1 Ireland","4302":"2nd Floor, The Merrion Centre","4303":"Nutley Lane","4304":"Donnybrook","4305":"Dublin 4","4306":"County Dublin","420":"D04KF62","4307":"IE"},
+{"label":"US - GS1","4300":"GS1","4302":"300 Charles Ewing Blvd.","4305":"Ewing Township","420":"08628","4307":"US"},
+{"label":"AU - GS1 Australia","4300":"GS1 Australia Melbourne Office","4302":"Nexus Business Park","4303":"8 Nexus Court","4304":"Mulgrave","4305":"Melbourne","420":"3170","4306":"Victoria","4307":"AU"},
+{"label":"BR - GS1 Brasil","4300":"GS1 Brasil","4302":"Av. 9 de Julho, 3183","4303":"Apt 125","4304":"Jardim Paulista","4305":"São Paulo","420":"CEP 01407-000","4306":"SP","4307":"BR"}
+];
+
+function filterByGrouping(grouping) {
+    return function(element) {
+        return  element.grouping==grouping;
+    };
+}
+
+function filterExcludeGrouping(grouping) {
+    return function(element) {
+        return  element.grouping!==grouping;
+    };
+}
+
+
+function filterByLabel(id) {
+    return function(element) {
+        return  element.label==id;
+    };
+}
+
+function filterExcludeLabel(id) {
+    return function(element) {
+        return  element.label!==id;
+    };
+}
+
+function gs1date(xsdDate) {
+	return xsdDate.replace(/\d\d(\d\d)-(\d\d)-(\d\d)/,"$1$2$3");
+}
+
+function gs1dateTime(xsdDateTime) {
+	return xsdDateTime.replace(/\d\d(\d\d)-(\d\d)-(\d\d)T(\d\d):(\d\d)/,"$1$2$3$4$5");
+}
+
+function gs1measurement(val) {
+	var ndp=0;
+	var rv={};
+	var numeric="";
+	if (val.indexOf(".")> -1) {
+		var parts=val.split(".");
+		ndp=parts[1].length;
+		numeric=parts[0]+parts[1];
+	} else {
+		numeric=val;
+	}
+		if (numeric.length < 6) {
+		numeric="0".repeat(6-numeric.length)+numeric;
+	}
+	
+	rv.ndp=ndp;
+	rv.sixdigit=numeric;
+	return rv;
+}
+
+function processS4Tarray(s4tTermsF) {
+	var orderedKeys=[];
+	var obj={};
+	var rv={};
+	s4tTermsF.forEach(function(element) {
+			orderedKeys.push(element.code);
+			obj[element.code]=element;
+	});
+	rv.orderedKeys=orderedKeys;
+
+	rv.obj=obj;
+	return rv;
+}
+
+
+var s4tObj=processS4Tarray(s4tTerms);
+
+var mode=0;
+
+var zeroToFive=["0","1","2","3","4","5"];
+
+
+
+
+</script>
+
+<style type="text/css">
+body { font-family: Verdana; }
+h1 {text-align: center;}
+h2 {text-align: center;}
+tr.dates { background-color: #FFCCCC;}
+tr.shippingAddress { background-color: #FFFFCC;}
+tr.deliveryInstructions { background-color: #CCFFCC;}
+tr.returnAddress { background-color: #CCCCFF;}
+tr.freightUnitInformation { background-color: #CCFFFF;}
+tr.keyQualifiers { background-color: #FFCC99;}
+tr.measurements { background-color: #D9D9D9;}
+td.label {text-align: right; font-weight: 700;}
+div.qrpanel1 {float: right; width: 49%;}
+div.qrpanel2 {float: left; width: 49%;}
+table#inputData {float: left;}
+table#decodedData {float: right;}
+textarea#dlOutput { width: 100%; font-size: 1em; height: 140px; overflow-y: scroll;}
+textarea#elsOutput { width: 100%; font-size: 1em; height: 140px; overflow-y: scroll;}
+textarea#dlInput { width: 100%; font-size: 1em; height: 140px; overflow-y: scroll;}
+textarea#elsInput { width: 100%; font-size: 1em; height: 140px; overflow-y: scroll;}
+td.s4tCode {text-align: center;}
+input.maxWidth {width: 100%;}
+div#symbol2D {position: absolute; top: calc(9em + 145px); left: 50%; width: 50%; }
+div#stats {position: absolute;  right: 2%; width: 48%; height: 1em; text-align: center; }
+div#navbar {width: 100%; height: 1.5em;}
+input.navbutton {width: 49%; text-align: center;  font-weight: 700;}
+input#encode { float: left; }
+input#decode {float: right; }
+.activeButton {background-color: #000099; color: #FFFFFF;}
+.inactiveButton {background-color: #FFFFFF; color: #000099;}
+table#size  tr th {text-align: center;}
+div#inputform {width: 49%; float: left}
+div#decoded {width: 49%; float: right}
+canvas {border: 16px solid white; background-color: #FFFFFF; margin-left: auto; margin-right: auto; }
+.hidden {display: none;}
+.selectCode {font-size: 1.2em; font-weight: 700;}
+
+</style>
+</head>
+<body>
+
+<div id="app1">
+
+<h1>GS1 barcode encoding Interactive Demo</h1>
+
+
+
+<div id="navbar">
+<input button id="encode" class="navbutton" value="ENCODE / GENERATE" @click="setMode(0)" v-bind:class="{ activeButton: (mode==0), inactiveButton: (mode==1) }"/><input button id="decode" class="navbutton" value="DECODE"  @click="setMode(1)" v-bind:class="{ activeButton: (mode==1), inactiveButton: (mode==0) }"/>
+</div>
+<div id="inputform" v-if="mode==0">
+
+	<table id="inputData">
+	<tbody>
+	<tr><td>Choose 2D symbol</td><td colspan="3">
+	<select v-model="whichCode" class="selectCode">
+	<option value="0">QR code with GS1 Digital Link URI</option>
+	<option value="1">GS1 Data Matrix with element string</option>
+	</select>	
+	</td></tr>
+	</tbody>
+	<tbody>
+	<tr><td>GTIN</td><td colspan="2"><input class="maxWidth" type="text" v-model="primaryValue"></td><td><input type="button" value="demo" @click="demoData2(primaryAIobj.example)"></td></tr>
+	<tr><td>URI stem</td><td colspan="4"><input class="maxWidth" type="text" v-model="uriStem"></td></tr>
+	<tr><td></td><td></td><td></td><td style="text-align: center;">AI</td></tr>
+	</tbody>
+	<tbody v-for="ex in keyQualifiers">
+	<tr class="keyQualifiers"><td v-bind:title="ex.definition">{{ex.label}}</td><td><span v-if="s4tObj.obj[ex.code].datatype=='xsd:string'"><input type="text" v-model="s4tData[ex.code]" class="maxWidth"></span><span v-if="s4tObj.obj[ex.code].datatype=='xsd:date'"><input class="date" type="date" v-model="s4tData[ex.code]"></span><span v-if="s4tObj.obj[ex.code].datatype=='xsd:boolean'"><select v-model="s4tData[ex.code]"><option value="1">Yes</option><option value="0">No</option></select></span></td><td><input type="button" value="demo" @click="demoData(ex.code)"></td><td class="s4tCode">{{ex.code}}</td></tr>
+	</tbody>
+	<tbody v-for="ex in dates">
+	<tr class="dates"><td v-bind:title="ex.definition">{{ex.label}}</td><td><span v-if="s4tObj.obj[ex.code].datatype=='xsd:string'"><input type="text" v-model="s4tData[ex.code]" class="maxWidth"></span><span v-if="s4tObj.obj[ex.code].datatype=='xsd:date'"><input class="date" type="date" v-model="s4tData[ex.code]"></span><span v-if="s4tObj.obj[ex.code].datatype=='xsd:boolean'"><select v-model="s4tData[ex.code]"><option value="1">Yes</option><option value="0">No</option></select></span></td><td><input type="button" value="demo" @click="demoData(ex.code)"></td><td class="s4tCode">{{ex.code}}</td></tr>
+	</tbody>
+	<tbody>
+	<tr><td colspan="4">pathInfo = {{pathInfo}}</tr>
+	</tbody>
+	</table>
+
+</div>
+
+<div class="qrpanel1" v-if="mode==0">
+	<textarea id="dlOutput" v-if="whichCode==0" :value="gs1dlURI" @change="changedDLoutput($event)"></textarea>
+	<textarea id="elsOutput" v-if="whichCode==1" :value="gs1elementString" @change="changedESoutput($event)"></textarea>
+	<p class="hidden"><input id="selection" type="text" v-model="selectedCanvas"/></p>
+	<div v-if="this.primaryValue !== ''" id="stats">{{moduleCount}}x{{moduleCount}} modules. Minimum/Target size: {{symbolSizeMinimum}} mm. Maximum size {{symbolSizeMaximum}} mm.</div>
+
+</div> 
+
+<div class="qrpanel2" v-if="mode==1">
+	<select v-model="whichCode" class="selectCode">
+	<option value="0">QR code with GS1 Digital Link URI</option>
+	<option value="1">GS1 Data Matrix with element string</option>
+	</select>
+	<p class="hidden"><input id="selection2" type="text" v-model="selectedCanvas2"/></p>
+	<div id="gs1DigitalLinkDecode">
+	<textarea v-if="whichCode==0" id="dlInput" v-model="gs1dlURI2decode"></textarea>
+	<textarea v-if="whichCode==1" id="elsInput" v-model="gs1els2decode"></textarea>
+	</div>
+</div>
+
+<div id="decoded" v-if="mode==1">
+	<table id="decodedData">
+	<tbody>
+	<tr><td><span>{{primaryValueExtracted.code}}</span></td><td colspan="1">{{primaryValueExtracted.value}}</td><td></td></tr>
+	<tr><td>URI stem</td><td colspan="3">{{uriStemExtracted}}</td></tr>
+	<tr><td>Scan4Transport URI ?</td><td colspan="3">{{s4tDetected}}</td></tr>
+	<tr><td></td><td></td><td>S4T Code</td></tr>
+	</tbody>
+	<tbody v-for="ex in keyQualifiers">
+	<tr class="keyQualifiers"><td v-bind:title="ex.definition">{{ex.label}}</td><td><span v-if="s4tObj.obj[ex.code].datatype=='xsd:string'">{{queryStringExtracted[ex.code]}}</span><span v-if="s4tObj.obj[ex.code].datatype=='xsd:date'">{{gs1date3(queryStringExtracted[ex.code])}}</span><span v-if="s4tObj.obj[ex.code].datatype=='xsd:boolean'">{{booleanValue(queryStringExtracted[ex.code])}}</span></td><td class="s4tCode">{{ex.code}}</td></tr>
+	</tbody>
+	<tbody v-for="ex in dates">
+	<tr class="dates"><td v-bind:title="ex.definition">{{ex.label}}</td><td><span v-if="s4tObj.obj[ex.code].datatype=='xsd:string'">{{queryStringExtracted[ex.code]}}</span><span v-if="s4tObj.obj[ex.code].datatype=='xsd:date'">{{gs1date3(queryStringExtracted[ex.code])}}</span><span v-if="s4tObj.obj[ex.code].datatype=='xsd:boolean'">{{booleanValue(queryStringExtracted[ex.code])}}</span></td><td class="s4tCode">{{ex.code}}</td></tr>
+	</tbody>
+	</table>
+
+
+</div>
+</div>
+
+<div id="symbol2D">
+<canvas id="canvas0"></canvas>
+<canvas id="canvas1"></canvas>
+<p style="text-align:center;">2D barcode generated using <a href="https://github.com/metafloor/bwip-js/" target="_blank">https://github.com/metafloor/bwip-js/</a><br/>&nbsp;<br/>For questions/feedback about this tool, please contact <a href="mailto:mark.harrison@g1.org">mark.harrison@g1.org</a><br/>&nbsp;<br/><b>Note:</b><br/>Please note that the demo values shown in this tool are shown as human-readable values without the use of percent-encoding that is expected for non-Latin characters and space characters for Application Identifiers (4300)-(4306), (4310)-(4316) and (4320) even when those Application Identifiers and their values are expressed in GS1 element strings.</p>
+</div>
+
+<script language="javascript">
+
+	var gtin="";
+	var uriStem="https://example.com";
+	var s4tData={};
+	var qrURI="blank.png";
+	var gs1dlURI2decode="";
+	var gs1els2decode="";
+	var booleans={"1":"Yes","0":"No",undefined:""};
+	var primary="GTIN";
+	var primaryValue="";
+	var shipDemo="shipDemoMenu";
+	var returnDemo="returnDemoMenu";
+
+
+
+function updateCanvas(elem,code,stringToEncode) {
+	try {
+		// The return value is the canvas element
+		let canvas = bwipjs.toCanvas(elem, {
+				bcid:        code,       // Barcode type
+				text:        stringToEncode,    // Text to encode
+				scaleX:       2,               // 3x scaling factor
+				scaleY:       2,               // 3x scaling factor
+				includetext: false,            // Show human-readable text
+				textxalign:  'center',        // Always good to set this
+			});
+		let el=document.getElementById(elem);
+		return el.width/4;		
+	} catch (e) {
+		// `e` may be a string or Error object
+	}
+
+}
+
+
+
+	var app1 = new Vue({
+		el: "#app1",
+		data : {
+			s4tTerms: s4tTerms,
+			s4tPrimaryIdentifiers : s4tPrimaryIdentifiers,
+			gtin: gtin,
+			countryCodes : countryCodes,
+			primary: primary,
+			primaryValue: primaryValue,
+			uriStem: uriStem,
+			s4tData: s4tData,
+			mode: mode,
+			booleans: booleans,
+			zeroToFive: zeroToFive,
+			gs1dlURI2decode : gs1dlURI2decode,
+			gs1els2decode : gs1els2decode,
+			shipDemo : shipDemo,
+			returnDemo : returnDemo,
+			demoAddresses : demoAddresses,
+			whichCode : 0
+		},
+		computed : {
+			primaryAIobj: function() {
+				return this.s4tPrimaryIdentifiers.filter(filterByLabel(this.primary))[0];
+			},
+			s4tObj : function() {
+				return processS4Tarray(this.s4tTerms);
+			},
+			s4tDataJSON : function() {
+				return JSON.stringify(this.s4tData);
+			},
+
+			keyQualifiers: function() {
+				return s4tTerms.filter(filterByGrouping("KeyQualifiers"));
+			},
+			dates: function() {
+				return s4tTerms.filter(filterByGrouping("Dates"));
+			},
+			
+			pathInfo: function() {
+			 let rv="";
+			 for (kq in this.keyQualifiers) {
+			 	if ((this.s4tData.hasOwnProperty(this.keyQualifiers[kq].code))  && (this.s4tData[this.keyQualifiers[kq].code] !== "")) {
+			 	   rv+= "/"+this.keyQualifiers[kq].code+"/"+this.s4tData[this.keyQualifiers[kq].code];
+			 	}
+			 }
+			 return rv;
+			},
+
+			queryStringExtracted: function() {
+				var qso={};
+				if (this.whichCode ==0 ){
+					var uri=this.gs1dlURI2decode;
+					if (uri !== undefined && uri !== null && uri !== "") {
+						if (uri.indexOf(" ")> -1) {
+							uri=uri.substr(0,uri.indexOf(" "));
+						}
+						var qsa=uri.substr(1-(0-uri.indexOf("?"))).split("&");
+						qsa.forEach(function(el) {
+							if (el !== undefined) {
+								var kv=el.split("=");
+								if (kv[1] !== null & kv[1] !== undefined) {
+								var v=kv[1].replace(/\+/g,"%20");
+								qso[kv[0]]=decodeURIComponent(v);
+								}
+							}
+						});
+					}
+				} else {
+					let els=this.gs1els2decode;
+					if (els !== undefined && els !== null && els !== "") {
+						let splits=els.match(/(\(\d{2,4}\))|([^(]+)/g);
+						for (let i=0; i<splits.length/2; i++) {
+							let k=splits[i*2].replace(/[()]/g,"");
+							let v=splits[1+i*2].replace(/\+/g,"%20");
+							qso[k]=decodeURIComponent(v);;
+						}
+						
+					}
+				}
+				return qso;
+			},
+			
+			s4tDetected : function() {
+				let rv="No";
+				if (this.whichCode ==0) {
+				if (this.gs1dlURI2decode.slice(-4) == "&s4t") {
+				rv="Yes";
+				}
+				}
+				return rv;
+			},
+			
+			primaryValueExtracted : function() {
+				let pathInfo="";
+				let rv={};
+				let c={"01":"GTIN"};
+				let digits=new RegExp("^\\d+$");
+				if (this.whichCode ==0) {
+				
+					if (this.gs1dlURI2decode !== undefined && this.gs1dlURI2decode !== null && this.gs1dlURI2decode !== "") {
+						var inq = this.gs1dlURI2decode.indexOf("?");
+						if (inq== -1) {
+							pathInfo = this.gs1dlURI2decode;
+						} else {
+							pathInfo = this.gs1dlURI2decode.substr(0,this.gs1dlURI2decode.indexOf("?"));
+						}
+						var rePath=new RegExp("\\/(gtin|01)\\/(\\d{4}.+?)$");
+						if (rePath.test(pathInfo)) {
+							let code=pathInfo.match(rePath)[1].toUpperCase();
+							if (digits.test(code)) {
+								code=c[code];
+							}			
+							rv.code=code;	
+							rv.value=pathInfo.match(rePath)[2];
+						} else {
+							rv.code="";
+							rv.value="";
+						}
+					}
+				
+				} else {
+						let qso={};
+						let els=this.gs1els2decode;
+						let splits=els.match(/(\(\d{2,4}\))|([^(]+)/g);
+						for (let i=0; i<splits.length/2; i++) {
+							let k=splits[i*2].replace(/[()]/g,"");
+							let v=splits[1+i*2].replace(/\+/g,"%20");
+							qso[k]=decodeURIComponent(v);;
+						}
+						rv.code="GTIN";
+						rv.value=qso["01"];
+				
+				}
+				return rv;
+			},
+			uriStemExtracted: function() {
+				var uriStem="";
+				if (this.whichCode ==0 ) {
+					if (this.gs1dlURI2decode !== undefined && this.gs1dlURI2decode !== null && this.gs1dlURI2decode !== "") {
+						var inq = this.gs1dlURI2decode.indexOf("?");
+						if (inq== -1) {
+							pathInfo = this.gs1dlURI2decode;
+						} else {
+							pathInfo = this.gs1dlURI2decode.substr(0,this.gs1dlURI2decode.indexOf("?"));
+						}
+						var rePath=new RegExp("\\/(gtin|01)\\/(\\d{4}.+?)$");
+					
+						if (rePath.test(pathInfo)) { 
+							let l=pathInfo.match(rePath)[0].length;
+							uriStem = pathInfo.substr(0,pathInfo.length-l);
+						}						
+					}
+				}
+				return uriStem;				
+			},
+			
+			queryString: function() {
+				s4to=JSON.parse(this.s4tDataJSON);
+				kvPairs=[];
+				s4tObj.orderedKeys.forEach(function(k) {
+				let xc = this.primaryAIobj;
+				
+					if (!((k == "10") || (k== "21"))) {
+				
+						if ((s4to.hasOwnProperty(k)) && (s4to[k] !== "")) {
+							var valToEncode="";
+							if (this.s4tObj.obj[k].datatype=="xsd:date") {							
+								valToEncode=gs1date(s4to[k]);
+							}
+							if (this.s4tObj.obj[k].datatype=="xsd:dateTime") {							
+								valToEncode=gs1dateTime(s4to[k]);
+							}
+							if (this.s4tObj.obj[k].datatype=="gs1:Measurement") {
+								var rv=gs1measurement(s4to[k]);
+								valToEncode = rv.sixdigit;
+								k=k.replace("n",rv.ndp);
+							}
+							if (valToEncode ==  "") {
+								valToEncode=encodeURIComponent(s4to[k]);
+							}
+						
+							kvPairs.push(k+"="+valToEncode);
+					
+						}
+					}
+				
+				});
+				return kvPairs.join("&");
+			},
+			gs1dlURI: function() {
+				var uriStem=this.uriStem.replace(/\/$/,"");
+				var qs=this.queryString.replace(/\%20/g,"+");
+				var dl = "";
+				if (this.primaryValue !== "") {
+					dl = uriStem+"/"+this.primaryAIobj.code+"/"+this.primaryValue+this.pathInfo;
+					
+					if (qs !== "") {
+					  dl+="?"+qs;
+					}
+				}
+				// this.generateQR(dl);
+				this.gs1dlURI2decode = dl;
+				return dl;
+				
+			},
+			gs1elementString: function() {
+				let rv="";
+				if (this.primaryValue !== "") {
+				rv="(00)"+this.primaryValue;
+				s4to=JSON.parse(this.s4tDataJSON);
+				kvPairs=[];
+				s4tObj.orderedKeys.forEach(function(k) {
+				let xc = this.primaryAIobj;
+				
+				
+					if ((s4to.hasOwnProperty(k)) && (s4to[k] !== "")) {
+						var valToEncode="";
+						if (this.s4tObj.obj[k].datatype=="xsd:date") {							
+							valToEncode=gs1date(s4to[k]);
+						}
+						if (this.s4tObj.obj[k].datatype=="xsd:dateTime") {							
+							valToEncode=gs1dateTime(s4to[k]);
+						}
+						if (this.s4tObj.obj[k].datatype=="gs1:Measurement") {
+							var rv=gs1measurement(s4to[k]);
+							valToEncode = rv.sixdigit;
+							k=k.replace("n",rv.ndp);
+						}
+						if (valToEncode ==  "") {
+							valToEncode=encodeURIComponent(s4to[k]);
+						}
+						
+					    kvPairs.push("("+k+")"+valToEncode);
+					}
+
+
+
+				});
+				rv+=kvPairs.join("");
+				}
+				this.gs1els2decode = rv;
+				return rv;
+			},
+			
+			"res1" : function() {
+			    if (this.mode==0) {
+				return updateCanvas("canvas0","qrcode",this.gs1dlURI);
+				} else {
+				if (this.gs1dlURI2decode == "") {  this.gs1dlURI2decode = this.gs1dlURI }
+				return updateCanvas("canvas0","qrcode",this.gs1dlURI2decode);
+				}
+			},
+			"res2" : function() {
+			    if (this.mode==0) {
+				return updateCanvas("canvas1","gs1datamatrix",this.gs1elementString);
+				} else {
+				if (this.gs1els2decode == "") { this.gs1els2decode = this.gs1elementString; }
+	 			return updateCanvas("canvas1","gs1datamatrix",this.gs1els2decode);
+				}
+			},
+			"selectedCanvas": function() {
+			  let toHide = 1-this.whichCode;
+			  let elh=document.getElementById("canvas"+toHide);
+			  let els=document.getElementById("canvas"+this.whichCode);
+			  elh.style.display="none";
+			  els.style.display="block";
+			  return "canvas"+this.whichCode;
+			},
+			
+			"selectedCanvas2": function() {
+				return this.res1+this.res2+this.selectedCanvas+this.gs1elementString+this.gs1dlURI;
+			},
+			
+			
+			moduleCount: function() {
+				if (this.whichCode==0) { return this.res1; }
+				if (this.whichCode==1) { return this.res2; }
+			},
+			symbolSizeMinimum: function() {
+				return Math.floor(this.moduleCount * 743)/1000;
+			},
+			symbolSizeTarget: function() {
+				return Math.floor(this.moduleCount * 743)/1000;
+			},
+			symbolSizeMaximum: function() {
+				return Math.floor(this.moduleCount * 1500)/1000;
+			}
+			
+			
+		
+		},
+		methods: {
+		    demoShipAddress: function(event) {
+		    	let newValue = event.target.value;
+				let a=["4300","4301","4302","4303","4304","4305","4306","4307","420"];
+		    	if (newValue == "clear") {
+		    		for (i in a) {
+						Vue.set(app1.s4tData,a[i],"");
+		    		}
+		    	} else {
+					let o = JSON.parse(newValue);
+					let i;
+					for (i in a) {
+					Vue.set(app1.s4tData,a[i],"");
+					Vue.set(app1.s4tData,a[i],o[a[i]]);
+					}
+		    	}
+		    },
+
+		    demoReturnAddress: function(event) {
+		    	let newValue = event.target.value;
+				let a=["4300","4301","4302","4303","4304","4305","4306","4307","420"];
+				let m={"4300":"4310","4301":"4311","4302":"4312","4303":"4313","4304":"4314","4305":"4315","4306":"4316","4307":"4317","420":"4318"};
+		    	if (newValue == "clear") {
+		    		for (i in a) {
+						Vue.set(app1.s4tData,m[a[i]],"");
+		    		}
+		    	} else {
+					let o = JSON.parse(newValue);
+					let i;
+					for (i in a) {
+					Vue.set(app1.s4tData,m[a[i]],"");
+					Vue.set(app1.s4tData,m[a[i]],o[a[i]]);
+					}
+		    	}
+		    },
+		
+			changedDLoutput: function(event) {
+				let newValue = event.target.value;
+				// this.generateQR(newValue);
+				this.gs1dlURI2decode = newValue;
+				this.gs1dlURI = newValue;
+				
+			},
+		
+			clearPrimaryIdentifierValues: function() {
+				this.s4tPrimaryIdentifiers.forEach(function(el) {
+					Vue.set(app1.s4tData,el.code,"");
+				});
+				this.primaryValue="";
+			},
+			demoData: function(el) {
+				var demoVal = s4tObj.obj[el].example;
+				Vue.set(app1.s4tData,el,demoVal);
+				
+			},
+			demoData2: function(demoVal) {
+				this.primaryValue=demoVal;
+			},
+			gs1ToMeasurement: function(queryStringExtracted,code) {
+				var rv={};
+				this.zeroToFive.forEach(function(el) {
+					var tempCode=code.replace("n",el);
+					if (queryStringExtracted.hasOwnProperty(tempCode)) {
+						rv.value=queryStringExtracted[tempCode]/Math.pow(10,parseInt(el));
+						rv.code=tempCode;
+					}
+				});
+				return rv;
+			},
+			gs1date3: function(gs1Date) {
+				var rv="";
+				var regexDate= new RegExp("^\\d{6}$");
+				if (gs1Date !== undefined && regexDate.test(gs1Date)) {
+				var doubleDigits = gs1Date.split(/(\d{2})/);
+				// TODO determine this correctly based on whether >=51 - see Gen Specs
+				var year=parseInt(doubleDigits[1]);
+				
+				var currentYear=new Date().getFullYear().toString();
+				var currentLastYY=parseInt(currentYear.substr(-2));
+				var currentFirstYY=parseInt(currentYear.substr(0,2));
+				
+				var diff=year-currentLastYY;
+				var fullyear=currentFirstYY.toString()+year.toString();
+				if (diff >=51 && diff <= 99) {
+					fullyear=(currentFirstYY-1).toString()+year.toString();
+				}
+				if (diff >= -99 && diff <= -50) {
+					fullyear=(currentFirstYY+1).toString()+year.toString();
+				}
+				
+				if (fullyear !== undefined) {
+				rv=doubleDigits[5]+"/"+doubleDigits[3]+"/"+fullyear;
+				}
+				}
+				return rv;
+			},
+			gs1date4: function(gs1Date) {
+				var rv="";
+				var regexDate= new RegExp("^\\d{6}|\\d{8}|\\d{10}$");
+				if (gs1Date !== undefined && regexDate.test(gs1Date)) {
+				var doubleDigits = gs1Date.split(/(\d{2})/);
+				// TODO determine this correctly based on whether >=51 - see Gen Specs
+				var year=parseInt(doubleDigits[1]);
+				
+				var currentYear=new Date().getFullYear().toString();
+				var currentLastYY=parseInt(currentYear.substr(-2));
+				var currentFirstYY=parseInt(currentYear.substr(0,2));
+				
+				var diff=year-currentLastYY;
+				var fullyear=currentFirstYY.toString()+year.toString();
+				if (diff >=51 && diff <= 99) {
+					fullyear=(currentFirstYY-1).toString()+year.toString();
+				}
+				if (diff >= -99 && diff <= -50) {
+					fullyear=(currentFirstYY+1).toString()+year.toString();
+				}
+				
+				var hour="00";
+				var min="00";
+				if (gs1Date.length > 6) {
+				hour=doubleDigits[7];
+				}
+				if (gs1Date.length > 8) {
+				min=doubleDigits[9];
+				}
+				
+				if (fullyear !== undefined) {
+				rv=doubleDigits[5]+"/"+doubleDigits[3]+"/"+fullyear+" "+hour+":"+min;
+				}
+				}
+				return rv;
+			},
+			
+			
+			setMode: function(el) {
+				this.mode=el;
+				var qrc=document.getElementById("symbol2D");
+				if (el==1) {
+					qrc.style.left="0%";
+				} else {
+					qrc.style.left="50%";
+				}
+			},
+			booleanValue: function(el) {
+				return this.booleans[el];
+			}		
+		}
+		
+		});
+
+
+
+</script>
+
+</body>
+</html>
