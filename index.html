@@ -165,14 +165,14 @@ canvas {border: 16px solid white; background-color: #FFFFFF; margin-left: auto; 
 	<tbody>
 	<tr><td>Choose 2D symbol</td><td colspan="3">
 	<select v-model="whichCode" class="selectCode">
-	<option value="0">QR code with GS1 Digital Link URI</option>
 	<option value="1">GS1 Data Matrix with element string</option>
+	<option value="0">QR code with GS1 Digital Link URI</option>
 	</select>	
 	</td></tr>
 	</tbody>
 	<tbody>
 	<tr><td>GTIN</td><td colspan="2"><input class="maxWidth" type="text" v-model="primaryValue"></td><td><input type="button" value="demo" @click="demoData2(primaryAIobj.example)"></td></tr>
-	<tr><td>URI stem</td><td colspan="4"><input class="maxWidth" type="text" v-model="uriStem"></td></tr>
+	<tr v-if="selectCode==0"><td>URI stem</td><td colspan="4"><input class="maxWidth" type="text" v-model="uriStem"></td></tr>
 	<tr><td></td><td></td><td></td><td style="text-align: center;">AI</td></tr>
 	</tbody>
 	<tbody v-for="ex in keyQualifiers">
