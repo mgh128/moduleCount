@@ -154,6 +154,9 @@ canvas {border: 16px solid white; background-color: #FFFFFF; margin-left: auto; 
 .hidden {display: none;}
 .selectCode {font-size: 1.2em; font-weight: 700;}
 
+input.needsAttention {background-color: #FFFF00;}
+input.isOK {background-color: #FFFFFF;}
+
 </style>
 </head>
 <body>
@@ -173,13 +176,16 @@ canvas {border: 16px solid white; background-color: #FFFFFF; margin-left: auto; 
 	<tbody>
 	<tr><td>Choose 2D symbol</td><td colspan="3">
 	<select v-model="whichCode" class="selectCode">
-	<option value="0">QR code with GS1 Digital Link URI</option>
+	<option value="0" v-if="showDLQR">QR code with GS1 Digital Link URI</option>
 	<option value="1">GS1 Data Matrix with element string</option>
 	</select>	
 	</td></tr>
 	</tbody>
 	<tbody>
 	<tr><td>GTIN</td><td colspan="2"><input class="maxWidth" type="text" v-model="primaryValue"></td><td><input type="button" value="demo" @click="demoData2(primaryAIobj.example)"></td></tr>
+	<tr v-if="!gtinIs14digits"><td></td><td colspan="3">^^ Please enter a GTIN as exactly 14 digits</td></tr>
+	<tr v-if="((gtinCheckDigit !== null) && !(gtinCheckDigitIsValid))"><td></td><td colspan="3">^^ Invalid GTIN check digit - should be <span v-if="gtinCheckDigit !== null">{{gtinCheckDigit}} <button @click="correctGTINcheckDigit()">Fix</button></span></td></tr>
+	<tr><td colspan="5">&nbsp;</td></tr>
 	<tr v-if="whichCode==0"><td>URI stem</td><td colspan="4"><input class="maxWidth" type="text" v-model="uriStem"></td></tr>
 	<tr><td></td><td></td><td></td><td style="text-align: center;">AI</td></tr>
 	</tbody>
@@ -188,6 +194,8 @@ canvas {border: 16px solid white; background-color: #FFFFFF; margin-left: auto; 
 	</tbody>
 	<tbody v-for="ex in keyQualifiers">
 	<tr class="keyQualifiers"><td v-bind:title="ex.definition">{{ex.label}}</td><td><span v-if="s4tObj.obj[ex.code].datatype=='xsd:string'"><input type="text" v-model="s4tData[ex.code]" class="maxWidth"></span><span v-if="s4tObj.obj[ex.code].datatype=='xsd:date'"><input class="date" type="date" v-model="s4tData[ex.code]"></span><span v-if="s4tObj.obj[ex.code].datatype=='xsd:boolean'"><select v-model="s4tData[ex.code]"><option value="1">Yes</option><option value="0">No</option></select></span></td><td><input type="button" value="demo" @click="demoData(ex.code)"></td><td class="s4tCode">{{ex.code}}</td></tr>
+	<tr v-if="((ex.code == '10') && !(validLotOrSerial(lot)))"><td></td><td colspan="3">^^ {{lot}} is invalid.  A valid batch/lot number should not exceed 20 characters, all from the GS1 82-character encodable character set</td></tr>
+	<tr v-if="((ex.code == '21') && !(validLotOrSerial(serial)))"><td></td><td colspan="3">^^ {{serial}} is invalid.  A valid serial number should not exceed 20 characters, all from the GS1 82-character encodable character set</td></tr>
 	</tbody>
 	</table>
 
@@ -203,7 +211,7 @@ canvas {border: 16px solid white; background-color: #FFFFFF; margin-left: auto; 
 
 <div class="qrpanel2" v-if="mode==1">
 	<select v-model="whichCode" class="selectCode">
-	<option value="0">QR code with GS1 Digital Link URI</option>
+	<option value="0"  v-if="showDLQR">QR code with GS1 Digital Link URI</option>
 	<option value="1">GS1 Data Matrix with element string</option>
 	</select>
 	<p class="hidden"><input id="selection2" type="text" v-model="selectedCanvas2"/></p>
@@ -252,7 +260,7 @@ canvas {border: 16px solid white; background-color: #FFFFFF; margin-left: auto; 
 	var shipDemo="shipDemoMenu";
 	var returnDemo="returnDemoMenu";
     var gs1dlt = new GS1DigitalLinkToolkit();
-
+	var showDLQR = false;
 
 
 function updateCanvas(elem,code,stringToEncode) {
@@ -274,6 +282,10 @@ function updateCanvas(elem,code,stringToEncode) {
 
 }
 
+	let validLotOrSerial = function(el) {
+		let re10=/^[0-9A-Za-z_!"%&'()*+,.\/;:<=>?-]{0,20}$/;
+		return (re10.test(el));
+	}
 
 
 
@@ -299,7 +311,10 @@ function updateCanvas(elem,code,stringToEncode) {
 			returnDemo : returnDemo,
 			demoAddresses : demoAddresses,
 			whichCode : 1,
-			gs1dlt : gs1dlt
+			gs1dlt : gs1dlt,
+			showDLQR : showDLQR,
+			validLotOrSerial : validLotOrSerial
+ 
 		},
 		computed : {
 			primaryAIobj: function() {
@@ -330,6 +345,38 @@ function updateCanvas(elem,code,stringToEncode) {
 			 	}
 			 }
 			 return rv;
+			},
+			
+
+			gtinIs14digits: function() {
+				let re=/^[0-9]{14}$/;
+				return re.test(this.primaryValue);
+			},
+			
+			gtinCheckDigit: function() {
+				if (this.gtinIs14digits) {
+				return gs1dlt.calculateCheckDigit('01',this.primaryValue);
+				} else {
+				return null;
+				}
+			},
+
+			gtinCheckDigitIsValid: function() {
+				return ((this.gtinCheckDigit !== null) && (this.gtinCheckDigit == this.primaryValue.substr(13,1)));
+			},
+			
+			
+			isValidGTIN : function() {
+				return this.gtinIs14digits && this.gtinCheckDigitIsValid;
+			},
+
+
+			lot: function() {
+				return this.s4tData["10"];
+			},
+
+			serial: function() {
+				return this.s4tData["21"];
 			},
 
 
@@ -363,7 +410,6 @@ function updateCanvas(elem,code,stringToEncode) {
 				
 					if (this.gs1dlURI2decode !== undefined && this.gs1dlURI2decode !== null && this.gs1dlURI2decode !== "") {
 						var obj2=gs1dlt.extractFromGS1digitalLink(this.gs1dlURI2decode);
-						console.log("obj2="+JSON.stringify(obj2));
 
 						rv.code="01";
 						rv.value=obj2["01"];
@@ -478,13 +524,11 @@ function updateCanvas(elem,code,stringToEncode) {
 			},
 			gs1elementString: function() {
 				let rv="";
-				if (this.primaryValue !== "") {
+				if ((this.primaryValue !== "") && (this.isValidGTIN)) {
 				rv="(01)"+this.primaryValue;
 				s4to=JSON.parse(this.s4tDataJSON);
 				kvPairs=[];
 				
-				console.log("s4tObjES"+JSON.stringify(s4tObjES));
-				console.log("s4tObjES.orderedKeys="+JSON.stringify(s4tObjES.orderedKeys));
 				
 				s4tObjES.orderedKeys.forEach(function(k) {
 				let xc = this.primaryAIobj;
@@ -503,11 +547,20 @@ function updateCanvas(elem,code,stringToEncode) {
 							valToEncode = rv.sixdigit;
 							k=k.replace("n",rv.ndp);
 						}
+
+						let encodable=true;
 						if (valToEncode ==  "") {
-							valToEncode=encodeURIComponent(s4to[k]);
+							// don't percent-encode in element string for non-S4T AIs.
+							valToEncode=s4to[k];
+							if (  (k=="10")&&(!(validLotOrSerial(valToEncode)))  ||  (k=="21")&&(!(validLotOrSerial(valToEncode)))  )  {
+								encodable=false;
+								// do not concatenate an invalid lot/batch or serial number
+							} else {
+								valToEncode=s4to[k];
+							}
 						}
 						
-					    kvPairs.push("("+k+")"+valToEncode);
+					    	if (encodable) { kvPairs.push("("+k+")"+valToEncode); }
 					}
 
 
@@ -569,6 +622,10 @@ function updateCanvas(elem,code,stringToEncode) {
 		methods: {
 
 
+
+			correctGTINcheckDigit: function() {
+				this.primaryValue = this.primaryValue.substr(0,13)+this.gtinCheckDigit;
+			},
 
 		    demoShipAddress: function(event) {
 		    	let newValue = event.target.value;
