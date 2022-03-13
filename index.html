@@ -2,8 +2,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<!--<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>-->
-<script src="vue.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue"></script>
 <script src="GS1DigitalLinkToolkit.js"></script>
 <script type="text/javascript" src="dist/bwip-js-min.js"></script>
 <script language="javascript">
@@ -290,9 +289,9 @@ function updateCanvas(elem,code,stringToEncode) {
 
 
 
-	var app1 = new Vue({
-		el: "#app1",
-		data : {
+	Vue.createApp({
+		data() {
+          return {
 			s4tTerms: s4tTerms,
 			s4tTermsES: s4tTermsES,
 			s4tPrimaryIdentifiers : s4tPrimaryIdentifiers,
@@ -314,7 +313,7 @@ function updateCanvas(elem,code,stringToEncode) {
 			gs1dlt : gs1dlt,
 			showDLQR : showDLQR,
 			validLotOrSerial : validLotOrSerial
- 
+          } 
 		},
 		computed : {
 			primaryAIobj: function() {
@@ -632,14 +631,14 @@ function updateCanvas(elem,code,stringToEncode) {
 				let a=["4300","4301","4302","4303","4304","4305","4306","4307","420"];
 		    	if (newValue == "clear") {
 		    		for (i in a) {
-						Vue.set(app1.s4tData,a[i],"");
+		    			this.s4tData[a[i]]="";
 		    		}
 		    	} else {
 					let o = JSON.parse(newValue);
 					let i;
 					for (i in a) {
-					Vue.set(app1.s4tData,a[i],"");
-					Vue.set(app1.s4tData,a[i],o[a[i]]);
+						this.s4tData[a[i]]="";
+						this.s4tData[a[i]]=o[a[i]];
 					}
 		    	}
 		    },
@@ -650,14 +649,14 @@ function updateCanvas(elem,code,stringToEncode) {
 				let m={"4300":"4310","4301":"4311","4302":"4312","4303":"4313","4304":"4314","4305":"4315","4306":"4316","4307":"4317","420":"4318"};
 		    	if (newValue == "clear") {
 		    		for (i in a) {
-						Vue.set(app1.s4tData,m[a[i]],"");
+		    			this.s4tData[m[a[i]]]="";
 		    		}
 		    	} else {
 					let o = JSON.parse(newValue);
 					let i;
 					for (i in a) {
-					Vue.set(app1.s4tData,m[a[i]],"");
-					Vue.set(app1.s4tData,m[a[i]],o[a[i]]);
+		    			this.s4tData[m[a[i]]]="";
+		    			this.s4tData[m[a[i]]]=o[a[i]];
 					}
 		    	}
 		    },
@@ -672,13 +671,13 @@ function updateCanvas(elem,code,stringToEncode) {
 		
 			clearPrimaryIdentifierValues: function() {
 				this.s4tPrimaryIdentifiers.forEach(function(el) {
-					Vue.set(app1.s4tData,el.code,"");
+		    			this.s4tData[el.code]="";
 				});
 				this.primaryValue="";
 			},
 			demoData: function(el) {
 				var demoVal = s4tObj.obj[el].example;
-				Vue.set(app1.s4tData,el,demoVal);
+					this.s4tData[el]=demoVal;
 				
 			},
 			demoData2: function(demoVal) {
@@ -774,7 +773,7 @@ function updateCanvas(elem,code,stringToEncode) {
 			}		
 		}
 		
-		});
+		}).mount("#app1");;
 
 
 
