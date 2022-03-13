@@ -663,7 +663,6 @@ function updateCanvas(elem,code,stringToEncode) {
 		
 			changedDLoutput: function(event) {
 				let newValue = event.target.value;
-				// this.generateQR(newValue);
 				this.gs1dlURI2decode = newValue;
 				this.gs1dlURI = newValue;
 				
@@ -671,7 +670,7 @@ function updateCanvas(elem,code,stringToEncode) {
 		
 			clearPrimaryIdentifierValues: function() {
 				this.s4tPrimaryIdentifiers.forEach(function(el) {
-		    			this.s4tData[el.code]="";
+		    	this.s4tData[el.code]="";
 				});
 				this.primaryValue="";
 			},
