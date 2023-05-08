@@ -26,15 +26,6 @@ var s4tTermsES=[
 ];
 
 
-var demoAddresses=[
-{"label":"JP - GS1 Japan","4300":"GS1 Japan","4301":"ヨッシー","4302":"9F, Shin Aoyama Bldg., East","4303":"1-1-1, Minami Aoyama","4304":"Minato-ku","4305":"Tokyo","420":"107-0062","4307":"JP"},
-{"label":"FR - GS1 France","4300":"GS1 France","4302":"21, boulevard Haussmann","4305":"Paris","420":"75009","4307":"FR"},
-{"label":"FR - Transport LAMBOLLEY","4300":"Transport LAMBOLLEY","4302":"Zone Industrielle des feuilles, Zone A","4303":"21 Rue des entrepôts","4305":"SEYSSUEL","420":"38200","4307":"FR"},
-{"label":"IE - GS1 Ireland","4300":"GS1 Ireland","4302":"2nd Floor, The Merrion Centre","4303":"Nutley Lane","4304":"Donnybrook","4305":"Dublin 4","4306":"County Dublin","420":"D04KF62","4307":"IE"},
-{"label":"US - GS1","4300":"GS1","4302":"300 Charles Ewing Blvd.","4305":"Ewing Township","420":"08628","4307":"US"},
-{"label":"AU - GS1 Australia","4300":"GS1 Australia Melbourne Office","4302":"Nexus Business Park","4303":"8 Nexus Court","4304":"Mulgrave","4305":"Melbourne","420":"3170","4306":"Victoria","4307":"AU"},
-{"label":"BR - GS1 Brasil","4300":"GS1 Brasil","4302":"Av. 9 de Julho, 3183","4303":"Apt 125","4304":"Jardim Paulista","4305":"São Paulo","420":"CEP 01407-000","4306":"SP","4307":"BR"}
-];
 
 function filterByGrouping(grouping) {
     return function(element) {
@@ -177,7 +168,14 @@ input.isOK {background-color: #FFFFFF;}
 	<select v-model="whichCode" class="selectCode">
 	<option value="0">QR code with GS1 Digital Link URI</option>
 	<option value="1">GS1 Data Matrix with element string</option>
-	</select>	
+	</select>
+	<p v-if="whichCode==0">Error correction
+	<select v-model="errorCorrection">
+	<option value="L">Low</option>
+	<option value="M">Medium</option>
+	<option value="Q">Quality</option>
+	<option value="H">High</option>
+	</select></p>	
 	</td></tr>
 	</tbody>
 	<tbody>
@@ -262,17 +260,23 @@ input.isOK {background-color: #FFFFFF;}
 	var showDLQR = true;
 
 
-function updateCanvas(elem,code,stringToEncode) {
+function updateCanvas(elem,code,stringToEncode,errorCorrection) {
 	try {
-		// The return value is the canvas element
-		let canvas = bwipjs.toCanvas(elem, {
+	
+		let o={
 				bcid:        code,       // Barcode type
 				text:        stringToEncode,    // Text to encode
 				scaleX:       2,               // 3x scaling factor
 				scaleY:       2,               // 3x scaling factor
 				includetext: false,            // Show human-readable text
 				textxalign:  'center',        // Always good to set this
-			});
+			};
+		if (errorCorrection !== null) {
+			o.eclevel=errorCorrection;
+		}
+			
+		// The return value is the canvas element
+		let canvas = bwipjs.toCanvas(elem, o);
 		let el=document.getElementById(elem);
 		return el.width/4;		
 	} catch (e) {
@@ -308,8 +312,8 @@ function updateCanvas(elem,code,stringToEncode) {
 			gs1els2decode : gs1els2decode,
 			shipDemo : shipDemo,
 			returnDemo : returnDemo,
-			demoAddresses : demoAddresses,
 			whichCode : 0,
+			errorCorrection : "M",
 			gs1dlt : gs1dlt,
 			showDLQR : showDLQR,
 			validLotOrSerial : validLotOrSerial
@@ -573,18 +577,18 @@ function updateCanvas(elem,code,stringToEncode) {
 			
 			"res1" : function() {
 			    if (this.mode==0) {
-				return updateCanvas("canvas0","qrcode",this.gs1dlURI);
+				return updateCanvas("canvas0","qrcode",this.gs1dlURI,this.errorCorrection);
 				} else {
 				if (this.gs1dlURI2decode == "") {  this.gs1dlURI2decode = this.gs1dlURI }
-				return updateCanvas("canvas0","qrcode",this.gs1dlURI2decode);
+				return updateCanvas("canvas0","qrcode",this.gs1dlURI2decode,this.errorCorrection);
 				}
 			},
 			"res2" : function() {
 			    if (this.mode==0) {
-				return updateCanvas("canvas1","gs1datamatrix",this.gs1elementString);
+				return updateCanvas("canvas1","gs1datamatrix",this.gs1elementString,null);
 				} else {
 				if (this.gs1els2decode == "") { this.gs1els2decode = this.gs1elementString; }
-	 			return updateCanvas("canvas1","gs1datamatrix",this.gs1els2decode);
+	 			return updateCanvas("canvas1","gs1datamatrix",this.gs1els2decode,null);
 				}
 			},
 			"selectedCanvas": function() {
