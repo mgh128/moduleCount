@@ -183,7 +183,7 @@ input.isOK {background-color: #FFFFFF;}
 	<tr v-if="!gtinIs14digits"><td></td><td colspan="3">^^ Please enter a GTIN as exactly 14 digits</td></tr>
 	<tr v-if="((gtinCheckDigit !== null) && !(gtinCheckDigitIsValid))"><td></td><td colspan="3">^^ Invalid GTIN check digit - should be <span v-if="gtinCheckDigit !== null">{{gtinCheckDigit}} <button @click="correctGTINcheckDigit()">Fix</button></span></td></tr>
 	<tr><td colspan="5">&nbsp;</td></tr>
-	<tr v-if="whichCode==0"><td>URI stem</td><td colspan="4"><input class="maxWidth" type="text" v-model="uriStem"></td></tr>
+	<tr v-if="whichCode==0"><td>URI stem</td><td colspan="2"><input class="maxWidth" type="text" v-model="uriStem"></td><td colspan="2"><select v-model="uriStemCase"><option value="unchanged">as typed</option><option value="allUpper">ALL UPPER CASE</option><option value="partUpper">UPPER CASE DOMAIN & PROTOCOL</option><option value="allLower">all lower case</option></select></td></tr>
 	<tr><td></td><td></td><td></td><td style="text-align: center;">AI</td></tr>
 	</tbody>
 	<tbody v-for="ex in dates">
@@ -283,6 +283,7 @@ input.isOK {background-color: #FFFFFF;}
 	var returnDemo="returnDemoMenu";
     var gs1dlt = new GS1DigitalLinkToolkit();
 	var showDLQR = true;
+	var uriStemCase="unchanged";
 
 
 function updateCanvas(elem,code,stringToEncode,errorCorrection) {
@@ -355,7 +356,8 @@ function percentEncode(el) {
 			errorCorrection : "M",
 			gs1dlt : gs1dlt,
 			showDLQR : showDLQR,
-			validLotOrSerial : validLotOrSerial
+			validLotOrSerial : validLotOrSerial,
+			uriStemCase : uriStemCase
           } 
 		},
 		computed : {
@@ -549,11 +551,26 @@ function percentEncode(el) {
 				return kvPairs.join("&");
 			},
 			gs1dlURI: function() {
-				var uriStem=this.uriStem.replace(/\/$/,"");
-				var qs=this.queryString.replace(/\%20/g,"+");
-				var dl = "";
+				let uriStem=this.uriStem.replace(/\/$/,"");
+				let uriStem2 = uriStem;
+				if (this.uriStemCase == "allUpper") {
+					uriStem2 = uriStem.toUpperCase();
+				}
+				if (this.uriStemCase == "allLower") {
+					uriStem2 = uriStem.toLowerCase();
+				}
+				if (this.uriStemCase == "partUpper") {
+					let firstSlash=uriStem.indexOf("/",8);
+					if (firstSlash >0) {
+						uriStem2 = uriStem.substr(0,firstSlash).toUpperCase()+uriStem.substr(firstSlash);	
+					} else {
+						uriStem2 = uriStem.toUpperCase();
+					}
+				}
+				let qs=this.queryString.replace(/\%20/g,"+");
+				let dl = "";
 				if (this.primaryValue !== "") {
-					dl = uriStem+"/"+this.primaryAIobj.code+"/"+this.primaryValue+this.pathInfo;
+					dl = uriStem2+"/"+this.primaryAIobj.code+"/"+this.primaryValue+this.pathInfo;
 					
 					if (qs !== "") {
 					  dl+="?"+qs;
