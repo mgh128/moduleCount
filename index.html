@@ -11,22 +11,21 @@ var s4tPrimaryIdentifiers=[
 {"code":'01',"label":'GTIN',"grouping":'PrimaryIdentifiers',"datatype":"xsd:string","definition":'Global Trade Item Number (GTIN)',"example":"01234567890128","percentEncoded":false,"pattern":"[0-9]{14}"}
 ];
 
-var countryCodes={"AF":"Afghanistan","AX":"Åland Islands","AL":"Albania","DZ":"Algeria","AS":"American Samoa","AD":"Andorra","AO":"Angola","AI":"Anguilla","AQ":"Antarctica","AG":"Antigua and Barbuda","AR":"Argentina","AM":"Armenia","AW":"Aruba","AU":"Australia","AT":"Austria","AZ":"Azerbaijan","BS":"Bahamas","BH":"Bahrain","BD":"Bangladesh","BB":"Barbados","BY":"Belarus","BE":"Belgium","BZ":"Belize","BJ":"Benin","BM":"Bermuda","BT":"Bhutan","BT":"Bhutan","BO":"Bolivia (Plurinational State of)","BO":"Bolivia (Plurinational State of)","BQ":"Bonaire, Sint Eustatius and Saba","BA":"Bosnia and Herzegovina","BW":"Botswana","BV":"Bouvet Island","BR":"Brazil","IO":"British Indian Ocean Territory","BN":"Brunei Darussalam","BG":"Bulgaria","BF":"Burkina Faso","BI":"Burundi","KH":"Cambodia","CM":"Cameroon","CA":"Canada","CV":"Cabo Verde","KY":"Cayman Islands","CF":"Central African Republic","TD":"Chad","CL":"Chile","CL":"Chile","CN":"China","CX":"Christmas Island","CC":"Cocos (Keeling) Islands","CO":"Colombia","CO":"Colombia","KM":"Comoros","CG":"Congo","CD":"Congo (Democratic Republic of the)","CK":"Cook Islands","CR":"Costa Rica","CI":"Côte d'Ivoire","HR":"Croatia","CU":"Cuba","CU":"Cuba","CW":"Curaçao","CY":"Cyprus","CZ":"Czech Republic","DK":"Denmark","DJ":"Djibouti","DM":"Dominica","DO":"Dominican Republic","EC":"Ecuador","EG":"Egypt","SV":"El Salvador","SV":"El Salvador","GQ":"Equatorial Guinea","ER":"Eritrea","EE":"Estonia","ET":"Ethiopia","FK":"Falkland Islands (Malvinas)","FO":"Faroe Islands","FJ":"Fiji","FI":"Finland","FR":"France","GF":"French Guiana","PF":"French Polynesia","TF":"French Southern Territories","GA":"Gabon","GM":"Gambia","GE":"Georgia","DE":"Germany","GH":"Ghana","GI":"Gibraltar","GR":"Greece","GL":"Greenland","GD":"Grenada","GP":"Guadeloupe","GU":"Guam","GT":"Guatemala","GG":"Guernsey","GN":"Guinea","GW":"Guinea-Bissau","GY":"Guyana","HT":"Haiti","HT":"Haiti","HM":"Heard Island and McDonald Islands","VA":"Holy See","HN":"Honduras","HK":"Hong Kong","HU":"Hungary","IS":"Iceland","IN":"India","ID":"Indonesia","IR":"Iran (Islamic Republic of)","IQ":"Iraq","IE":"Ireland","IM":"Isle of Man","IL":"Israel","IT":"Italy","JM":"Jamaica","JP":"Japan","JE":"Jersey","JO":"Jordan","KZ":"Kazakhstan","KE":"Kenya","KI":"Kiribati","KP":"Korea (Democratic People's Republic of)","KR":"Korea (Republic of)","KW":"Kuwait","KG":"Kyrgyzstan","LA":"Lao People's Democratic Republic","LV":"Latvia","LB":"Lebanon","LS":"Lesotho","LS":"Lesotho","LR":"Liberia","LY":"Libya","LI":"Liechtenstein","LT":"Lithuania","LU":"Luxembourg","MO":"Macao","MK":"Macedonia (the former Yugoslav Republic of)","MG":"Madagascar","MW":"Malawi","MY":"Malaysia","MV":"Maldives","ML":"Mali","MT":"Malta","MH":"Marshall Islands","MQ":"Martinique","MR":"Mauritania","MU":"Mauritius","YT":"Mayotte","MX":"Mexico","MX":"Mexico","FM":"Micronesia (Federated States of)","MD":"Moldova (Republic of)","MC":"Monaco","MN":"Mongolia","ME":"Montenegro","MS":"Montserrat","MA":"Morocco","MZ":"Mozambique","MM":"Myanmar","NA":"Namibia","NA":"Namibia","NR":"Nauru","NP":"Nepal","NL":"Netherlands","NC":"New Caledonia","NZ":"New Zealand","NI":"Nicaragua","NE":"Niger","NG":"Nigeria","NU":"Niue","NF":"Norfolk Island","MP":"Northern Mariana Islands","NO":"Norway","OM":"Oman","PK":"Pakistan","PW":"Palau","PS":"Palestine, State of","PA":"Panama","PA":"Panama","PG":"Papua New Guinea","PY":"Paraguay","PE":"Peru","PH":"Philippines","PN":"Pitcairn","PL":"Poland","PT":"Portugal","PR":"Puerto Rico","QA":"Qatar","RE":"Réunion","RO":"Romania","RU":"Russian Federation","RW":"Rwanda","BL":"Saint Barthélemy","SH":"Saint Helena, Ascension and Tristan da Cunha","KN":"Saint Kitts and Nevis","LC":"Saint Lucia","MF":"Saint Martin (French part)","PM":"Saint Pierre and Miquelon","VC":"Saint Vincent and the Grenadines","WS":"Samoa","SM":"San Marino","ST":"Sao Tome and Principe","SA":"Saudi Arabia","SN":"Senegal","RS":"Serbia","SC":"Seychelles","SL":"Sierra Leone","SG":"Singapore","SX":"Sint Maarten (Dutch part)","SK":"Slovakia","SI":"Slovenia","SB":"Solomon Islands","SO":"Somalia","ZA":"South Africa","GS":"South Georgia and the South Sandwich Islands","SS":"South Sudan","ES":"Spain","LK":"Sri Lanka","SD":"Sudan","SR":"Suriname","SJ":"Svalbard and Jan Mayen","SZ":"Swaziland","SE":"Sweden","CH":"Switzerland","SY":"Syrian Arab Republic","TW":"Taiwan, Province of China","TJ":"Tajikistan","TZ":"Tanzania, United Republic of","TH":"Thailand","TL":"Timor-Leste","TG":"Togo","TK":"Tokelau","TO":"Tonga","TT":"Trinidad and Tobago","TN":"Tunisia","TR":"Turkey","TM":"Turkmenistan","TC":"Turks and Caicos Islands","TV":"Tuvalu","UG":"Uganda","UA":"Ukraine","AE":"United Arab Emirates","GB":"United Kingdom of Great Britain and Northern Ireland","US":"United States of America","UM":"United States Minor Outlying Islands","UY":"Uruguay","UY":"Uruguay","UZ":"Uzbekistan","VU":"Vanuatu","VE":"Venezuela (Bolivarian Republic of)","VN":"Viet Nam","VG":"Virgin Islands (British)","VI":"Virgin Islands (U.S.)","WF":"Wallis and Futuna","EH":"Western Sahara","YE":"Yemen","ZM":"Zambia","ZW":"Zimbabwe"};
 
-var s4tTerms=[
-{"code":'22',"label":'Consumer Product Variant',"grouping":'KeyQualifiers',"datatype":"xsd:string","definition":'Consumer Product Variant',"example":"EFG456","percentEncoded":false,"maxLength":20},
-{"code":'10',"label":'Batch/Lot',"grouping":'KeyQualifiers',"datatype":"xsd:string","definition":'Batch/Lot ID',"example":"ABC123","percentEncoded":false,"maxLength":20},
-{"code":'21',"label":'Serial number',"grouping":'KeyQualifiers',"datatype":"xsd:string","definition":'Serial number',"example":"987XYZ","percentEncoded":false,"maxLength":20},
-{"code":'17',"label":'Expiration date',"grouping":'Dates',"datatype":"xsd:date","definition":"Expiration date","example":"2021-12-31","percentEncoded":false}
-];
 
 var s4tTermsES=[
-{"code":'17',"label":'Expiration date',"grouping":'Dates',"datatype":"xsd:date","definition":"Expiration date","example":"2021-12-31","percentEncoded":false},
-{"code":'22',"label":'Consumer Product Variant',"grouping":'KeyQualifiers',"datatype":"xsd:string","definition":'Consumer Product Variant',"example":"EFG456","percentEncoded":false,"maxLength":20},
-{"code":'10',"label":'Batch/Lot',"grouping":'KeyQualifiers',"datatype":"xsd:string","definition":'Batch/Lot ID',"example":"ABC123","percentEncoded":false,"maxLength":20},
-{"code":'21',"label":'Serial number',"grouping":'KeyQualifiers',"datatype":"xsd:string","definition":'Serial number',"example":"987XYZ","percentEncoded":false,"maxLength":20}
+{"code":'17',"label":'Expiration date',"grouping":'Dates',"datatype":"xsd:date","definition":"Expiration date","example":"2021-12-31","percentEncoded":false,"orderES":0,"orderDL":9},
+{"code":'22',"label":'Consumer Product Variant',"grouping":'KeyQualifiers',"datatype":"xsd:string","definition":'Consumer Product Variant',"example":"EFG456","percentEncoded":false,"maxLength":20,"orderES":1,"orderDL":1},
+{"code":'10',"label":'Batch/Lot',"grouping":'KeyQualifiers',"datatype":"xsd:string","definition":'Batch/Lot ID',"example":"ABC123","percentEncoded":false,"maxLength":20,"orderES":1,"orderDL":2},
+{"code":'21',"label":'Serial number',"grouping":'KeyQualifiers',"datatype":"xsd:string","definition":'Serial number',"example":"987XYZ","percentEncoded":false,"maxLength":20,"orderES":1,"orderDL":3}
 ];
 
+
+function onWhat(parameter) {
+    return function(a,b) {
+        return (b.parameter - a.parameter);
+    }
+}
 
 
 function filterByGrouping(grouping) {
@@ -82,11 +81,11 @@ function gs1measurement(val) {
 	return rv;
 }
 
-function processS4Tarray(s4tTermsF) {
+function processS4Tarray(terms) {
 	var orderedKeys=[];
 	var obj={};
 	var rv={};
-	s4tTermsF.forEach(function(element) {
+	terms.forEach(function(element) {
 			orderedKeys.push(element.code);
 			obj[element.code]=element;
 	});
@@ -97,8 +96,8 @@ function processS4Tarray(s4tTermsF) {
 }
 
 
-var s4tObj=processS4Tarray(s4tTerms);
-var s4tObjES=processS4Tarray(s4tTermsES);
+var s4tObj=processS4Tarray(s4tTermsES.sort(onWhat("orderDL")));
+var s4tObjES=processS4Tarray(s4tTermsES.sort(onWhat("orderES")));
 
 var mode=0;
 
@@ -131,7 +130,7 @@ textarea#dlInput { width: 100%; font-size: 1em; height: 140px; overflow-y: scrol
 textarea#elsInput { width: 100%; font-size: 1em; height: 140px; overflow-y: scroll;}
 td.s4tCode {text-align: center;}
 input.maxWidth {width: 100%;}
-div#symbol2D {position: absolute; top: calc(15em + 145px); left: 50%; width: 50%; }
+div#symbol2D {position: absolute; top: calc(15em + 225px); left: 50%; width: 50%; }
 div#stats {position: absolute;  right: 2%; width: 48%; height: 1em; text-align: center; }
 div#navbar {width: 100%; height: 1.5em;}
 input.navbutton {width: 49%; text-align: center;  font-weight: 700;}
@@ -142,8 +141,11 @@ input#decode {float: right; }
 table#size  tr th {text-align: center;}
 div#inputform {width: 49%; float: left}
 div#decoded {width: 49%; float: right}
-canvas {border: 16px solid white; background-color: #FFFFFF; margin-left: auto; margin-right: auto; }
+canvas { background-color: #FFFFFF; margin-left: auto; margin-right: auto; }
+#canvas1 {border: 4px solid #CCFFFF;}
+#canvas0 {border: 16px solid #CCFFFF;}
 .hidden {display: none;}
+.visible {display: block;}
 .selectCode {font-size: 1.2em; font-weight: 700;}
 .selectErrorCorrection {font-size: 1em; font-weight: 700;}
 .selectSST {font-size: 1.0em; font-weight: 400;}
@@ -188,9 +190,15 @@ input.isOK {background-color: #FFFFFF;}
 	<tr v-if="!gtinIs14digits"><td></td><td colspan="3">^^ Please enter a GTIN as exactly 14 digits</td></tr>
 	<tr v-if="((gtinCheckDigit !== null) && !(gtinCheckDigitIsValid))"><td></td><td colspan="3">^^ Invalid GTIN check digit - should be <span v-if="gtinCheckDigit !== null">{{gtinCheckDigit}} <button @click="correctGTINcheckDigit()">Fix</button></span></td></tr>
 	<tr><td colspan="5">&nbsp;</td></tr>
-	<tr v-if="whichCode==0"><td>URI stem</td><td colspan="2"><input class="maxWidth" type="text" v-model="uriStem"></td><td colspan="2"><select v-model="uriStemCase"><option value="unchanged">as typed</option><option value="allUpper">ALL UPPER CASE</option><option value="partUpper">UPPER CASE DOMAIN & PROTOCOL</option><option value="allLower">all lower case</option></select></td></tr>
-	<tr><td></td><td></td><td></td><td style="text-align: center;">AI</td></tr>
+	<tr v-if="whichCode==0"><td>URI stem</td><td colspan="3"><input class="maxWidth" type="text" v-model="uriStem"></td></tr>
+	<tr v-if="whichCode==0"><td></td><td colspan="2"><select v-model="uriStemCase"><option value="unchanged">as typed</option><option value="allUpper">ALL UPPER CASE</option><option value="partUpper">UPPER CASE DOMAIN & PROTOCOL</option><option value="allLower">all lower case</option></select></td></tr>
 	</tbody>
+	</table>
+	
+	<table>
+	<thead>
+	<tr><th colspan="3"></th><th>AI</th><th># chrs</th></tr>
+	</thead>
 	<tbody v-for="ex in dates">
 	<tr class="dates">
 		<td v-bind:title="ex.definition">{{ex.label}}</td>
@@ -199,10 +207,12 @@ input.isOK {background-color: #FFFFFF;}
 			<span v-if="s4tObj.obj[ex.code].datatype=='xsd:date'"><input class="date" type="date" v-model="s4tData[ex.code]"></span>
 			<span v-if="s4tObj.obj[ex.code].datatype=='xsd:boolean'"><select v-model="s4tData[ex.code]"><option value="1">Yes</option><option value="0">No</option></select></span>
 		</td>
-		<td><input type="button" value="demo" @click="demoData(ex.code)"></td><td class="s4tCode">{{ex.code}}</td>
+		<td><input type="button" value="demo" @click="demoData(ex.code)"><input type="button" value="clear" @click="clearData(ex.code)"></td>
+		<td class="s4tCode">&nbsp;{{ex.code}}&nbsp;</td>
 		<td></td>
 	</tr>
 	</tbody>
+	
 	<tbody v-for="ex in keyQualifiers">
 	<tr class="keyQualifiers">
 		<td v-bind:title="ex.definition">{{ex.label}}</td>
@@ -211,31 +221,25 @@ input.isOK {background-color: #FFFFFF;}
 			<span v-if="s4tObj.obj[ex.code].datatype=='xsd:date'"><input class="date" type="date" v-model="s4tData[ex.code]"></span>
 			<span v-if="s4tObj.obj[ex.code].datatype=='xsd:boolean'"><select v-model="s4tData[ex.code]"><option value="1">Yes</option><option value="0">No</option></select></span>
 			</td>
-		<td><input type="button" value="demo" @click="demoData(ex.code)"></td>
-		<td class="s4tCode">{{ex.code}}</td>
-		<td>( {{strlen(s4tData[ex.code])}} / {{ex.maxLength}} )</td>
+		<td><input type="button" value="demo" @click="demoData(ex.code)"><input type="button" value="clear" @click="clearData(ex.code)"></td>
+		<td class="s4tCode">&nbsp;{{ex.code}}&nbsp;</td>
+		<td>{{strlen(s4tData[ex.code])}} of {{ex.maxLength}}</td>
 	</tr>
 	<tr v-if="((ex.code == '22') && !(validLotOrSerial(cpv)))"><td></td><td colspan="3">^^ {{cpv}} is invalid.  A valid consumer product variant number should not exceed 20 characters, all from the GS1 82-character encodable character set</td></tr>
 	<tr v-if="((ex.code == '10') && !(validLotOrSerial(lot)))"><td></td><td colspan="3">^^ {{lot}} is invalid.  A valid batch/lot number should not exceed 20 characters, all from the GS1 82-character encodable character set</td></tr>
 	<tr v-if="((ex.code == '21') && !(validLotOrSerial(serial)))"><td></td><td colspan="3">^^ {{serial}} is invalid.  A valid serial number should not exceed 20 characters, all from the GS1 82-character encodable character set</td></tr>
 	</tbody>
+	</table>
+	<table>
 	<tbody>
 	<tr><td colspan="4">&nbsp;</td></tr>
-	<tr><td>Where scanned?</td><td colspan="3">
+	<tr><td style="vertical-align: top;">Where scanned?</td><td colspan="3">
 	<select v-model="whichSST" class="selectSST">
-	<option value="0">General retail POS & general distribution</option>
+	<option value="0">General retail POS AND general distribution</option>
 	<option value="1">ONLY General retail POS, NOT in general distribution</option>
 	</select>
+	<p>(Using {{sstRef[whichSST]}}<br/>of GS1 General Specifications &sect;{{sstSection[whichSST]}})</p>
 	</tr>
-	</table>
-	&nbsp;<br/>
-	<table>
-	<tr><td colspan="3">Using Figure {{sstFig[whichSST]}} ({{sstRef[whichSST]}})<br/>of GS1 General Specifications section {{sstSection[whichSST]}}</td></tr>
-	<tr><td colspan="3">&nbsp;</td></tr>
-	<tr><td colspan="2" style="text-align: right;">Minimum module x-dimension:</td><td colspan="1">{{minX[whichSST]}}mm</td></tr>
-	<tr><td colspan="2" style="text-align: right;">Target module x-dimension:</td><td colspan="1">{{targetX[whichSST]}}mm</td></tr>
-	<tr><td colspan="2" style="text-align: right;">Maximum module x-dimension:</td><td colspan="1">{{maxX[whichSST]}}mm</td></tr>
-	</tbody>
 	</table>
 
 </div>
@@ -244,11 +248,22 @@ input.isOK {background-color: #FFFFFF;}
 	<textarea id="dlOutput" v-if="whichCode==0" :value="gs1dlURI" @change="changedDLoutput($event)"></textarea>
 	<textarea id="elsOutput" v-if="whichCode==1" :value="gs1elementString" @change="changedESoutput($event)"></textarea>
 	<p class="hidden"><input id="selection" type="text" v-model="selectedCanvas"/></p>
-	<div v-if="this.primaryValue !== ''" id="stats">{{moduleCount}}x{{moduleCount}} modules.<br/>
-	<table style="padding-left: 3em;">
-	<tr><td>Minimum size:</td><td>{{symbolSizeMinimum}}mm</td><td>using x-dimension of {{minX[whichSST]}}mm per module.</td></tr>
-	<tr><td>Target size:</td><td>{{symbolSizeTarget}}mm</td><td>using x-dimension of {{targetX[whichSST]}}mm per module.</td></tr>
-	<tr><td>Maximum size:</td><td>{{symbolSizeMaximum}}mm</td><td>using x-dimension of {{maxX[whichSST]}}mm per module.</td></tr>
+	<div v-if="this.primaryValue !== ''" id="stats"><p>{{moduleCount}}x{{moduleCount}} modules plus a quiet zone of {{whichCode==0 ? "4 modules" : "1 module"}} on each side.</p>
+	<table style="margin-left: auto; margin-right: auto;">
+	<thead>
+	<tr><th colspan="2">Resulting barcode size<br/>
+	<select v-model="quietZone">
+		<option value="0">excluding quiet zone</option>
+		<option value="1">including quiet zone</option>
+	</select>
+	</th>
+	<th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th><th colspan="2">module x-dimensions:</th></tr>
+	</thead>
+	<tbody>
+	<tr><td>Minimum size:</td><td>{{symbolSizeMinimum}}mm</td><td></td><td>Minimum</td><td>{{minX[whichSST]}}mm</td></tr>
+	<tr><td>Target size:</td><td>{{symbolSizeTarget}}mm</td><td></td><td>Target</td><td>{{targetX[whichSST]}}mm</td></tr>
+	<tr><td>Maximum size:</td><td>{{symbolSizeMaximum}}mm</td><td></td><td>Maximum</td><td>{{maxX[whichSST]}}mm</td></tr>
+	</tbody>
 	</table>
 	</div>
 
@@ -296,6 +311,7 @@ input.isOK {background-color: #FFFFFF;}
 <canvas id="canvas1"></canvas>
 <p style="text-align:center;">2D barcode generated using <a href="https://github.com/metafloor/bwip-js/" target="_blank">https://github.com/metafloor/bwip-js/</a><br/>&nbsp;<br/>For questions/feedback about this tool, please contact <a href="mailto:mark.harrison@gs1.org">mark.harrison@gs1.org</a><br/></p>
 </div>
+
 
 <script language="javascript">
 
@@ -365,11 +381,9 @@ function percentEncode(el) {
 	Vue.createApp({
 		data() {
           return {
-			s4tTerms: s4tTerms,
 			s4tTermsES: s4tTermsES,
 			s4tPrimaryIdentifiers : s4tPrimaryIdentifiers,
 			gtin: gtin,
-			countryCodes : countryCodes,
 			primary: primary,
 			primaryValue: primaryValue,
 			uriStem: uriStem,
@@ -394,27 +408,33 @@ function percentEncode(el) {
 			minX : {"0":0.743,"1":0.396},
 			targetX : {"0":0.990,"1":0.495},
 			maxX : {"0":0.990,"1":0.990},
+			quietZone : 1
           } 
 		},
 		computed : {
+			canvasVisibilityClass : function() {
+				return (this.primaryValue == "" ? "hidden": "visible")
+			},
+		
 			primaryAIobj: function() {
 				return this.s4tPrimaryIdentifiers.filter(filterByLabel(this.primary))[0];
 			},
 			s4tObj : function() {
-				return processS4Tarray(this.s4tTerms);
+				return processS4Tarray(s4tTermsES.sort(onWhat("orderDL")));
 			},
 			s4tObjES : function() {
-				return processS4Tarray(this.s4tTermsES);
+				return processS4Tarray(s4tTermsES.sort(onWhat("orderES")));
 			},
+
 			s4tDataJSON : function() {
 				return JSON.stringify(this.s4tData);
 			},
 
 			keyQualifiers: function() {
-				return s4tTerms.filter(filterByGrouping("KeyQualifiers"));
+				return s4tTermsES.filter(filterByGrouping("KeyQualifiers"));
 			},
 			dates: function() {
-				return s4tTerms.filter(filterByGrouping("Dates"));
+				return s4tTermsES.filter(filterByGrouping("Dates"));
 			},
 			
 			pathInfo: function() {
@@ -705,14 +725,16 @@ function percentEncode(el) {
 				if (this.whichCode==0) { return this.res1; }
 				if (this.whichCode==1) { return this.res2; }
 			},
+			
+			
 			symbolSizeMinimum: function() {
-				return Math.floor(this.moduleCount * this.minX[this.whichSST]*1000)/1000;
+				return Math.floor((this.moduleCount+this.quietZone*(this.whichCode==0 ? 8:2)) * this.minX[this.whichSST]*1000)/1000;
 			},
 			symbolSizeTarget: function() {
-				return Math.floor(this.moduleCount * this.targetX[this.whichSST]*1000)/1000;
+				return Math.floor((this.moduleCount+this.quietZone*(this.whichCode==0 ? 8:2)) * this.targetX[this.whichSST]*1000)/1000;
 			},
 			symbolSizeMaximum: function() {
-				return Math.floor(this.moduleCount * 1500)/1000;
+				return Math.floor((this.moduleCount+this.quietZone*(this.whichCode==0 ? 8:2)) * this.maxX[this.whichSST]*1000)/1000;
 			}
 			
 			
@@ -785,6 +807,9 @@ function percentEncode(el) {
 				var demoVal = s4tObj.obj[el].example;
 					this.s4tData[el]=demoVal;
 				
+			},
+			clearData: function(el) {
+					this.s4tData[el]="";				
 			},
 			demoData2: function(demoVal) {
 				this.primaryValue=demoVal;
