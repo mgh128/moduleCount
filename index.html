@@ -228,12 +228,13 @@ input.isOK {background-color: #FFFFFF;}
 	</select>
 	</tr>
 	</table>
+	&nbsp;<br/>
 	<table>
 	<tr><td colspan="3">Using Figure {{sstFig[whichSST]}} ({{sstRef[whichSST]}})<br/>of GS1 General Specifications section {{sstSection[whichSST]}}</td></tr>
 	<tr><td colspan="3">&nbsp;</td></tr>
-	<tr><td colspan="2" style="text-align: right;">Minimum module x-dimension:</td><td colspan="1">{{minX[whichSST]}} mm</td></tr>
-	<tr><td colspan="2" style="text-align: right;">Target module x-dimension:</td><td colspan="1">{{targetX[whichSST]}} mm</td></tr>
-	<tr><td colspan="2" style="text-align: right;">Maximum module x-dimension:</td><td colspan="1">{{maxX[whichSST]}} mm</td></tr>
+	<tr><td colspan="2" style="text-align: right;">Minimum module x-dimension:</td><td colspan="1">{{minX[whichSST]}}mm</td></tr>
+	<tr><td colspan="2" style="text-align: right;">Target module x-dimension:</td><td colspan="1">{{targetX[whichSST]}}mm</td></tr>
+	<tr><td colspan="2" style="text-align: right;">Maximum module x-dimension:</td><td colspan="1">{{maxX[whichSST]}}mm</td></tr>
 	</tbody>
 	</table>
 
@@ -245,9 +246,9 @@ input.isOK {background-color: #FFFFFF;}
 	<p class="hidden"><input id="selection" type="text" v-model="selectedCanvas"/></p>
 	<div v-if="this.primaryValue !== ''" id="stats">{{moduleCount}}x{{moduleCount}} modules.<br/>
 	<table style="padding-left: 3em;">
-	<tr><td>Minimum size:</td><td>{{symbolSizeMinimum}} mm</td><td>using x-dimension of {{minX[whichSST]}}mm per module.</td></tr>
-	<tr><td>Target size:</td><td>{{symbolSizeTarget}} mm</td><td>using x-dimension of {{targetX[whichSST]}}mm per module.</td></tr>
-	<tr><td>Maximum size:</td><td>{{symbolSizeMaximum}} mm</td><td>using x-dimension of {{maxX[whichSST]}}mm per module.</td></tr>
+	<tr><td>Minimum size:</td><td>{{symbolSizeMinimum}}mm</td><td>using x-dimension of {{minX[whichSST]}}mm per module.</td></tr>
+	<tr><td>Target size:</td><td>{{symbolSizeTarget}}mm</td><td>using x-dimension of {{targetX[whichSST]}}mm per module.</td></tr>
+	<tr><td>Maximum size:</td><td>{{symbolSizeMaximum}}mm</td><td>using x-dimension of {{maxX[whichSST]}}mm per module.</td></tr>
 	</table>
 	</div>
 
