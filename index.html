@@ -130,7 +130,6 @@ textarea#dlInput { width: 100%; font-size: 1em; height: 140px; overflow-y: scrol
 textarea#elsInput { width: 100%; font-size: 1em; height: 140px; overflow-y: scroll;}
 td.s4tCode {text-align: center;}
 input.maxWidth {width: 100%;}
-div#symbol2D {position: absolute; top: calc(15em + 225px); left: 50%; width: 50%; }
 div#stats {position: absolute;  right: 2%; width: 48%; height: 1em; text-align: center; }
 div#navbar {width: 100%; height: 1.5em;}
 input.navbutton {width: 49%; text-align: center;  font-weight: 700;}
@@ -141,8 +140,8 @@ input#decode {float: right; }
 table#size  tr th {text-align: center;}
 div#inputform {width: 49%; float: left}
 div#decoded {width: 49%; float: right}
-canvas { background-color: #FFFFFF; margin-left: auto; margin-right: auto; }
-#canvas1 {border: 4px solid #CCFFFF;}
+canvas { background-color: #FFFFFF; margin-left: auto; margin-right: auto; display:none;}
+#canvas1 {border: 4px solid #CCFFFF; }
 #canvas0 {border: 16px solid #CCFFFF;}
 .hidden {display: none;}
 .visible {display: block;}
@@ -247,7 +246,6 @@ input.isOK {background-color: #FFFFFF;}
 <div class="qrpanel1" v-if="mode==0">
 	<textarea id="dlOutput" v-if="whichCode==0" :value="gs1dlURI" @change="changedDLoutput($event)"></textarea>
 	<textarea id="elsOutput" v-if="whichCode==1" :value="gs1elementString" @change="changedESoutput($event)"></textarea>
-	<p class="hidden"><input id="selection" type="text" v-model="selectedCanvas"/></p>
 	<div v-if="this.primaryValue !== ''" id="stats"><p>{{moduleCount}}x{{moduleCount}} modules plus a quiet zone of {{whichCode==0 ? "4 modules" : "1 module"}} on each side.</p>
 	<table style="margin-left: auto; margin-right: auto;">
 	<thead>
@@ -263,6 +261,9 @@ input.isOK {background-color: #FFFFFF;}
 	<tr><td>Minimum size:</td><td>{{symbolSizeMinimum}}mm</td><td></td><td>Minimum</td><td>{{minX[whichSST]}}mm</td></tr>
 	<tr><td>Target size:</td><td>{{symbolSizeTarget}}mm</td><td></td><td>Target</td><td>{{targetX[whichSST]}}mm</td></tr>
 	<tr><td>Maximum size:</td><td>{{symbolSizeMaximum}}mm</td><td></td><td>Maximum</td><td>{{maxX[whichSST]}}mm</td></tr>
+	<tr v-if="(imgDataURL !== undefined) && (imgDataURL !== null) && (imgDataURL !== '')"><td colspan="5">&nbsp;</td></tr>
+	<tr v-if="(imgDataURL !== undefined) && (imgDataURL !== null) && (imgDataURL !== '')"><td colspan="5" text-align="center"><img :src="imgDataURL" :style="imgBorderStyle"/></td></tr>
+	<tr><td colspan="5"><p style="text-align:center;">2D barcode generated using <a href="https://github.com/metafloor/bwip-js/" target="_blank">https://github.com/metafloor/bwip-js/</a><br/>&nbsp;<br/>For questions/feedback about this tool, please contact <a href="mailto:mark.harrison@gs1.org">mark.harrison@gs1.org</a><br/></p></td></tr>
 	</tbody>
 	</table>
 	</div>
@@ -274,7 +275,6 @@ input.isOK {background-color: #FFFFFF;}
 	<option value="0"  v-if="showDLQR">QR code with GS1 Digital Link URI</option>
 	<option value="1">GS1 Data Matrix with element string</option>
 	</select>
-	<p class="hidden"><input id="selection2" type="text" v-model="selectedCanvas2"/></p>
 	<div id="gs1DigitalLinkDecode">
 	<textarea v-if="whichCode==0" id="dlInput" v-model="gs1dlURI2decode"></textarea>
 	<textarea v-if="whichCode==1" id="elsInput" v-model="gs1els2decode"></textarea>
@@ -306,11 +306,6 @@ input.isOK {background-color: #FFFFFF;}
 </div>
 </div>
 
-<div id="symbol2D">
-<canvas id="canvas0"></canvas>
-<canvas id="canvas1"></canvas>
-<p style="text-align:center;">2D barcode generated using <a href="https://github.com/metafloor/bwip-js/" target="_blank">https://github.com/metafloor/bwip-js/</a><br/>&nbsp;<br/>For questions/feedback about this tool, please contact <a href="mailto:mark.harrison@gs1.org">mark.harrison@gs1.org</a><br/></p>
-</div>
 
 
 <script language="javascript">
@@ -331,7 +326,7 @@ input.isOK {background-color: #FFFFFF;}
 	var uriStemCase="unchanged";
 
 
-function updateCanvas(elem,code,stringToEncode,errorCorrection) {
+function updateCanvas(code,stringToEncode,errorCorrection) {
 	try {
 	
 		let o={
@@ -345,11 +340,16 @@ function updateCanvas(elem,code,stringToEncode,errorCorrection) {
 		if (errorCorrection !== null) {
 			o.eclevel=errorCorrection;
 		}
+		
+		let elem2 = document.createElement('canvas');
 			
 		// The return value is the canvas element
-		let canvas = bwipjs.toCanvas(elem, o);
-		let el=document.getElementById(elem);
-		return el.width/4;		
+		let canvas2 = bwipjs.toCanvas(elem2, o);
+		let dataURL = canvas2.toDataURL('image/png');
+		console.log("module count = canvas2.width/4 = "+canvas2.width/4);
+		console.log("dataURL = "+dataURL);
+		
+		return {"modules":canvas2.width/4,"dataURL":dataURL};		
 	} catch (e) {
 		// `e` may be a string or Error object
 	}
@@ -693,37 +693,38 @@ function percentEncode(el) {
 			
 			"res1" : function() {
 			    if (this.mode==0) {
-				return updateCanvas("canvas0","qrcode",this.gs1dlURI,this.errorCorrection);
+				return updateCanvas("qrcode",this.gs1dlURI,this.errorCorrection);
 				} else {
 				if (this.gs1dlURI2decode == "") {  this.gs1dlURI2decode = this.gs1dlURI }
-				return updateCanvas("canvas0","qrcode",this.gs1dlURI2decode,this.errorCorrection);
+				return updateCanvas("qrcode",this.gs1dlURI2decode,this.errorCorrection);
 				}
 			},
 			"res2" : function() {
 			    if (this.mode==0) {
-				return updateCanvas("canvas1","gs1datamatrix",this.gs1elementString,null);
+				return updateCanvas("gs1datamatrix",this.gs1elementString,null);
 				} else {
 				if (this.gs1els2decode == "") { this.gs1els2decode = this.gs1elementString; }
-	 			return updateCanvas("canvas1","gs1datamatrix",this.gs1els2decode,null);
+	 			return updateCanvas("gs1datamatrix",this.gs1els2decode,null);
 				}
 			},
-			"selectedCanvas": function() {
-			  let toHide = 1-this.whichCode;
-			  let elh=document.getElementById("canvas"+toHide);
-			  let els=document.getElementById("canvas"+this.whichCode);
-			  elh.style.display="none";
-			  els.style.display="block";
-			  return "canvas"+this.whichCode;
-			},
-			
-			"selectedCanvas2": function() {
-				return this.res1+this.res2+this.selectedCanvas+this.gs1elementString+this.gs1dlURI;
-			},
+
 			
 			
 			moduleCount: function() {
-				if (this.whichCode==0) { return this.res1; }
-				if (this.whichCode==1) { return this.res2; }
+				if (this.whichCode==0) { return this.res1.modules; }
+				if (this.whichCode==1) { return this.res2.modules; }
+			},
+
+			imgDataURL: function() {
+				if (this.whichCode==0) { return this.res1.dataURL; }
+				if (this.whichCode==1) { return this.res2.dataURL; }
+			},
+			
+			imgBorderStyle: function() {
+				if (this.quietZone == 1) {
+					if (this.whichCode==0) { return "border: 16px solid #CCFFFF;"; }
+					if (this.whichCode==1) { return "border: 4px solid #CCFFFF;"; }		
+				}	
 			},
 			
 			
