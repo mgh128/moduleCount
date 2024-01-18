@@ -148,6 +148,7 @@ canvas { background-color: #FFFFFF; margin-left: auto; margin-right: auto; displ
 .selectCode {font-size: 1.2em; font-weight: 700;}
 .selectErrorCorrection {font-size: 1em; font-weight: 700;}
 .selectSST {font-size: 1.0em; font-weight: 400;}
+#encodedData { max-width: 40vw; width: 40vw; height: 3em; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; hyphenate-character: '&';}
 
 input.needsAttention {background-color: #FFFF00;}
 input.isOK {background-color: #FFFFFF;}
@@ -184,17 +185,18 @@ input.isOK {background-color: #FFFFFF;}
 	<option value="H">High</option>
 	</select>	
 	</td></tr>
+	<tr v-if="whichCode==0"><td>Enter any URI (optional):</td><td colspan="3"><input type="text" class="maxWidth" v-model="specifiedURI"/><input type="button" value="Clear" @click="clearSpecifiedURI"></td></tr>
 	
-	<tr><td>GTIN</td><td colspan="2"><input class="maxWidth" type="text" v-model="primaryValue"></td><td><input type="button" value="demo" @click="demoData2(primaryAIobj.example)"></td></tr>
-	<tr v-if="!gtinIs14digits"><td></td><td colspan="3">^^ Please enter a GTIN as exactly 14 digits</td></tr>
-	<tr v-if="((gtinCheckDigit !== null) && !(gtinCheckDigitIsValid))"><td></td><td colspan="3">^^ Invalid GTIN check digit - should be <span v-if="gtinCheckDigit !== null">{{gtinCheckDigit}} <button @click="correctGTINcheckDigit()">Fix</button></span></td></tr>
-	<tr><td colspan="5">&nbsp;</td></tr>
-	<tr v-if="whichCode==0"><td>URI stem</td><td colspan="3"><input class="maxWidth" type="text" v-model="uriStem"></td></tr>
-	<tr v-if="whichCode==0"><td></td><td colspan="2"><select v-model="uriStemCase"><option value="unchanged">as typed</option><option value="allUpper">ALL UPPER CASE</option><option value="partUpper">UPPER CASE DOMAIN & PROTOCOL</option><option value="allLower">all lower case</option></select></td></tr>
+	<tr v-if="specifiedURI == ''"><td>GTIN</td><td colspan="2"><input class="maxWidth" type="text" v-model="primaryValue"></td><td><input type="button" value="demo" @click="demoData2(primaryAIobj.example)"></td></tr>
+	<tr v-if="(specifiedURI == '') && (!gtinIs14digits)"><td></td><td colspan="3">^^ Please enter a GTIN as exactly 14 digits</td></tr>
+	<tr v-if="(specifiedURI == '') && (((gtinCheckDigit !== null) && !(gtinCheckDigitIsValid)))"><td></td><td colspan="3">^^ Invalid GTIN check digit - should be <span v-if="gtinCheckDigit !== null">{{gtinCheckDigit}} <button @click="correctGTINcheckDigit()">Fix</button></span></td></tr>
+	<tr v-if="specifiedURI == ''" ><td colspan="5">&nbsp;</td></tr>
+	<tr v-if="(specifiedURI == '') && (whichCode==0)"><td>URI stem</td><td colspan="3"><input class="maxWidth" type="text" v-model="uriStem"></td></tr>
+	<tr v-if="(specifiedURI == '') && (whichCode==0)"><td></td><td colspan="2"><select v-model="uriStemCase"><option value="unchanged">as typed</option><option value="allUpper">ALL UPPER CASE</option><option value="partUpper">UPPER CASE DOMAIN & PROTOCOL</option><option value="allLower">all lower case</option></select></td></tr>
 	</tbody>
 	</table>
 	
-	<table>
+	<table v-if="specifiedURI == ''">
 	<thead>
 	<tr><th colspan="3"></th><th>AI</th><th># chrs</th></tr>
 	</thead>
@@ -212,7 +214,7 @@ input.isOK {background-color: #FFFFFF;}
 	</tr>
 	</tbody>
 	
-	<tbody v-for="ex in keyQualifiers">
+	<tbody v-if="specifiedURI == ''" v-for="ex in keyQualifiers">
 	<tr class="keyQualifiers">
 		<td v-bind:title="ex.definition">{{ex.label}}</td>
 		<td>
@@ -229,6 +231,7 @@ input.isOK {background-color: #FFFFFF;}
 	<tr v-if="((ex.code == '21') && !(validLotOrSerial(serial)))"><td></td><td colspan="3">^^ {{serial}} is invalid.  A valid serial number should not exceed 20 characters, all from the GS1 82-character encodable character set</td></tr>
 	</tbody>
 	</table>
+	
 	<table>
 	<tbody>
 	<tr><td colspan="4">&nbsp;</td></tr>
@@ -246,7 +249,7 @@ input.isOK {background-color: #FFFFFF;}
 <div class="qrpanel1" v-if="mode==0">
 	<textarea id="dlOutput" v-if="whichCode==0" :value="gs1dlURI" @change="changedDLoutput($event)"></textarea>
 	<textarea id="elsOutput" v-if="whichCode==1" :value="gs1elementString" @change="changedESoutput($event)"></textarea>
-	<div v-if="this.primaryValue !== ''" id="stats"><p>{{moduleCount}}x{{moduleCount}} modules plus a quiet zone of {{whichCode==0 ? "4 modules" : "1 module"}} on each side.</p>
+	<div v-if="this.primaryValue !== '' || this.specifiedURI !== ''" id="stats"><p>{{moduleCount}}x{{moduleCount}} modules plus a quiet zone of {{whichCode==0 ? "4 modules" : "1 module"}} on each side.</p>
 	<table style="margin-left: auto; margin-right: auto;">
 	<thead>
 	<tr><th colspan="2">Resulting barcode size<br/>
@@ -263,6 +266,8 @@ input.isOK {background-color: #FFFFFF;}
 	<tr><td>Maximum size:</td><td>{{symbolSizeMaximum}}mm</td><td></td><td>Maximum</td><td>{{maxX[whichSST]}}mm</td></tr>
 	<tr v-if="(imgDataURL !== undefined) && (imgDataURL !== null) && (imgDataURL !== '')"><td colspan="5">&nbsp;</td></tr>
 	<tr v-if="(imgDataURL !== undefined) && (imgDataURL !== null) && (imgDataURL !== '')"><td colspan="5" text-align="center"><img :src="imgDataURL" :style="imgBorderStyle"/></td></tr>
+	<tr v-if="quietZone == 0"><td colspan="5">&nbsp;</td></tr>
+	<tr><td colspan="5" text-align="center"><textarea id="encodedData" v-model="encodedData" readonly></textarea></td></tr>
 	<tr><td colspan="5"><p style="text-align:center;">2D barcode generated using <a href="https://github.com/metafloor/bwip-js/" target="_blank">https://github.com/metafloor/bwip-js/</a><br/>&nbsp;<br/>For questions/feedback about this tool, please contact <a href="mailto:mark.harrison@gs1.org">mark.harrison@gs1.org</a><br/></p></td></tr>
 	</tbody>
 	</table>
@@ -346,8 +351,6 @@ function updateCanvas(code,stringToEncode,errorCorrection) {
 		// The return value is the canvas element
 		let canvas2 = bwipjs.toCanvas(elem2, o);
 		let dataURL = canvas2.toDataURL('image/png');
-		console.log("module count = canvas2.width/4 = "+canvas2.width/4);
-		console.log("dataURL = "+dataURL);
 		
 		return {"modules":canvas2.width/4,"dataURL":dataURL};		
 	} catch (e) {
@@ -408,12 +411,13 @@ function percentEncode(el) {
 			minX : {"0":0.743,"1":0.396},
 			targetX : {"0":0.990,"1":0.495},
 			maxX : {"0":0.990,"1":0.990},
-			quietZone : 1
+			quietZone : 1,
+			specifiedURI : ""
           } 
 		},
 		computed : {
 			canvasVisibilityClass : function() {
-				return (this.primaryValue == "" ? "hidden": "visible")
+				return (((this.primaryValue == "") && (this.specifiedURI == "")) ? "hidden": "visible")
 			},
 		
 			primaryAIobj: function() {
@@ -691,9 +695,23 @@ function percentEncode(el) {
 				return rv;
 			},
 			
+			"encodedData" : function() {
+				if (this.mode == 0) {
+					if (this.specifiedURI !== "") { return this.specifiedURI } else { return this.gs1dlURI }
+				}
+				if (this.mode == 1) {
+					return this.gs1elementString;
+				}
+			},
+			
 			"res1" : function() {
 			    if (this.mode==0) {
-				return updateCanvas("qrcode",this.gs1dlURI,this.errorCorrection);
+					if (this.specifiedURI == "") {
+						return updateCanvas("qrcode",this.gs1dlURI,this.errorCorrection);					
+					} else {
+						return updateCanvas("qrcode",this.specifiedURI,this.errorCorrection);					
+					}
+				
 				} else {
 				if (this.gs1dlURI2decode == "") {  this.gs1dlURI2decode = this.gs1dlURI }
 				return updateCanvas("qrcode",this.gs1dlURI2decode,this.errorCorrection);
@@ -742,6 +760,10 @@ function percentEncode(el) {
 		
 		},
 		methods: {
+		
+		    clearSpecifiedURI : function() {
+		    	this.specifiedURI="";
+		    },
 
 			strlen: function(el) {
 				if (el !== undefined) {
