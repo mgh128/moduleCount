@@ -8,13 +8,13 @@
 <script language="javascript">
 
 var s4tPrimaryIdentifiers=[
-{"code":'01',"label":'GTIN',"grouping":'PrimaryIdentifiers',"datatype":"xsd:string","definition":'Global Trade Item Number (GTIN)',"example":"01234567890128","percentEncoded":false,"pattern":"[0-9]{14}"}
+{"code":'01',"label":'GTIN',"grouping":'PrimaryIdentifiers',"datatype":"xsd:string","definition":'Global Trade Item Number (GTIN)',"example":"09506000134376","percentEncoded":false,"pattern":"[0-9]{14}"}
 ];
 
 
 
 var s4tTermsES=[
-{"code":'17',"label":'Expiration date',"grouping":'Dates',"datatype":"xsd:date","definition":"Expiration date","example":"2021-12-31","percentEncoded":false,"orderES":0,"orderDL":9},
+{"code":'17',"label":'Expiration date',"grouping":'Dates',"datatype":"xsd:date","definition":"Expiration date","example":"2024-03-31","percentEncoded":false,"orderES":0,"orderDL":9},
 {"code":'22',"label":'Consumer Product Variant',"grouping":'KeyQualifiers',"datatype":"xsd:string","definition":'Consumer Product Variant',"example":"EFG456","percentEncoded":false,"maxLength":20,"orderES":1,"orderDL":1},
 {"code":'10',"label":'Batch/Lot',"grouping":'KeyQualifiers',"datatype":"xsd:string","definition":'Batch/Lot ID',"example":"ABC123","percentEncoded":false,"maxLength":20,"orderES":1,"orderDL":2},
 {"code":'21',"label":'Serial number',"grouping":'KeyQualifiers',"datatype":"xsd:string","definition":'Serial number',"example":"987XYZ","percentEncoded":false,"maxLength":20,"orderES":1,"orderDL":3}
@@ -124,10 +124,10 @@ div.qrpanel1 {float: right; width: 49%;}
 div.qrpanel2 {float: left; width: 49%;}
 table#inputData {float: left;}
 table#decodedData {float: right;}
-textarea#dlOutput { width: 100%; font-size: 1em; height: 140px; overflow-y: scroll;}
-textarea#elsOutput { width: 100%; font-size: 1em; height: 140px; overflow-y: scroll;}
-textarea#dlInput { width: 100%; font-size: 1em; height: 140px; overflow-y: scroll;}
-textarea#elsInput { width: 100%; font-size: 1em; height: 140px; overflow-y: scroll;}
+textarea#dlOutput { width: 100%; font-size: 1em; height: 40px; overflow-y: scroll;}
+textarea#elsOutput { width: 100%; font-size: 1em; height: 40px; overflow-y: scroll;}
+textarea#dlInput { width: 100%; font-size: 1em; height: 40px; overflow-y: scroll;}
+textarea#elsInput { width: 100%; font-size: 1em; height: 40px; overflow-y: scroll;}
 td.s4tCode {text-align: center;}
 input.maxWidth {width: 100%;}
 div#stats {position: absolute;  right: 2%; width: 48%; height: 1em; text-align: center; }
@@ -149,6 +149,10 @@ canvas { background-color: #FFFFFF; margin-left: auto; margin-right: auto; displ
 .selectErrorCorrection {font-size: 1em; font-weight: 700;}
 .selectSST {font-size: 1.0em; font-weight: 400;}
 #encodedData { max-width: 40vw; width: 40vw; height: 3em; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; hyphenate-character: '&';}
+tr.highlight {background-color: #FFFF66; }
+.bold {font-weight: 700;}
+tr.topline td {border-top: 1px solid black;}
+tr.underline th {border-bottom: 1px solid black;}
 
 input.needsAttention {background-color: #FFFF00;}
 input.isOK {background-color: #FFFFFF;}
@@ -159,14 +163,11 @@ input.isOK {background-color: #FFFFFF;}
 
 <div id="app1">
 
-<h1>GS1 barcode encoding Interactive Demo</h1>
+<h1>GS1 Module Count tool</h1>
 
 
 
-<div id="navbar">
-<input button id="encode" class="navbutton" value="ENCODE / GENERATE" @click="setMode(0)" v-bind:class="{ activeButton: (mode==0), inactiveButton: (mode==1) }"/><input button id="decode" class="navbutton" value="DECODE"  @click="setMode(1)" v-bind:class="{ activeButton: (mode==1), inactiveButton: (mode==0) }"/>
-</div>
-<div id="inputform" v-if="mode==0">
+<div id="inputform">
 
 	<table id="inputData">
 	<tbody>
@@ -236,12 +237,14 @@ input.isOK {background-color: #FFFFFF;}
 	<tbody>
 	<tr><td colspan="4">&nbsp;</td></tr>
 	<tr><td style="vertical-align: top;">Where scanned?</td><td colspan="3">
-	<select v-model="whichSST" class="selectSST">
+	<select v-model="whichSST" class="selectSST" @change="updateSelectSST2()">
 	<option value="0">General retail POS AND general distribution</option>
 	<option value="1">ONLY General retail POS, NOT in general distribution</option>
 	</select>
 	<p>(Using {{sstRef[whichSST]}}<br/>of GS1 General Specifications &sect;{{sstSection[whichSST]}})</p>
 	</tr>
+	<tr><td colspan="4"><p style="text-align:center;">2D barcode generated using<br><a href="https://github.com/metafloor/bwip-js/" target="_blank">https://github.com/metafloor/bwip-js/</a><br/>&nbsp;<br/>For questions/feedback about this tool,<br>please contact <a href="mailto:mark.harrison@gs1.org">mark.harrison@gs1.org</a><br/></p></td></tr>
+
 	</table>
 
 </div>
@@ -250,65 +253,65 @@ input.isOK {background-color: #FFFFFF;}
 	<textarea id="dlOutput" v-if="whichCode==0" :value="gs1dlURI" @change="changedDLoutput($event)"></textarea>
 	<textarea id="elsOutput" v-if="whichCode==1" :value="gs1elementString" @change="changedESoutput($event)"></textarea>
 	<div v-if="this.primaryValue !== '' || this.specifiedURI !== ''" id="stats"><p>{{moduleCount}}x{{moduleCount}} modules plus a quiet zone of {{whichCode==0 ? "4 modules" : "1 module"}} on each side.</p>
+
 	<table style="margin-left: auto; margin-right: auto;">
-	<thead>
-	<tr><th colspan="2">Resulting barcode size<br/>
-	<select v-model="quietZone">
-		<option value="0">excluding quiet zone</option>
-		<option value="1">including quiet zone</option>
-	</select>
-	</th>
-	<th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th><th colspan="2">module x-dimensions:</th></tr>
-	</thead>
 	<tbody>
-	<tr><td>Minimum size:</td><td>{{symbolSizeMinimum}}mm</td><td></td><td>Minimum</td><td>{{minX[whichSST]}}mm</td></tr>
-	<tr><td>Target size:</td><td>{{symbolSizeTarget}}mm</td><td></td><td>Target</td><td>{{targetX[whichSST]}}mm</td></tr>
-	<tr><td>Maximum size:</td><td>{{symbolSizeMaximum}}mm</td><td></td><td>Maximum</td><td>{{maxX[whichSST]}}mm</td></tr>
 	<tr v-if="(imgDataURL !== undefined) && (imgDataURL !== null) && (imgDataURL !== '')"><td colspan="5">&nbsp;</td></tr>
 	<tr v-if="(imgDataURL !== undefined) && (imgDataURL !== null) && (imgDataURL !== '')"><td colspan="5" text-align="center"><img :src="imgDataURL" :style="imgBorderStyle"/></td></tr>
 	<tr v-if="quietZone == 0"><td colspan="5">&nbsp;</td></tr>
-	<tr><td colspan="5" text-align="center"><textarea id="encodedData" v-model="encodedData" readonly></textarea></td></tr>
-	<tr><td colspan="5"><p style="text-align:center;">2D barcode generated using <a href="https://github.com/metafloor/bwip-js/" target="_blank">https://github.com/metafloor/bwip-js/</a><br/>&nbsp;<br/>For questions/feedback about this tool, please contact <a href="mailto:mark.harrison@gs1.org">mark.harrison@gs1.org</a><br/></p></td></tr>
 	</tbody>
 	</table>
+	<div v-if="whichCode==0">
+
+    <hr/>
+	    <p>
+	        <select v-model="whichSST2" class="selectSST">
+            	<option value="0">General retail POS AND general distribution</option>
+            	<option value="1">ONLY General retail POS, NOT in general distribution</option>
+        	</select>&nbsp;
+        	<select v-model="quietZone2" class="selectSST">
+        		<option value="0">excluding quiet zone</option>
+        		<option value="1">including quiet zone</option>
+        	</select>
+        	</p>
+	    <table>
+	        <thead><tr class="underline"><th>Error correction</th><th v-if="quietZone2==0">Module Count excluding quiet zone</th><th  v-if="quietZone2==1">Module Count including quiet zone</th><th>Minimum size (mm)</th><th>Target size (mm)</th><th>Maximum size (mm)</th></tr></thead>
+	        <tbody>
+	            <tr v-for="k of Object.keys(countModulesEncodedData)" v-bind:class="{ highlight: (k == errorCorrection) }"><td>{{k}}</td><td  v-if="quietZone2==0">{{countModulesEncodedData[k]}} x {{countModulesEncodedData[k]}}</td><td  v-if="quietZone2==1">{{8+countModulesEncodedData[k]}} x {{8+countModulesEncodedData[k]}}</td><td>{{symbolSizeMinimum2(8*quietZone2+countModulesEncodedData[k])}}</td><td>{{symbolSizeTarget2(8*quietZone2+countModulesEncodedData[k])}}</td><td>{{symbolSizeMaximum2(8*quietZone2+countModulesEncodedData[k])}}</td></tr>
+	            <tr class="topline"><td colspan="2" class="bold">Module x-dimensions (mm) &#10132;</td><td>{{symbolSizeMinimum2(1)}}</td><td>{{symbolSizeTarget2(1)}}</td><td>{{symbolSizeMaximum2(1)}}</td></tr>
+	        </tbody>
+	    </table>
+	
+	
+	</div>
+	<div v-if="(whichCode==1) && (gs1elementString !== undefined) && (gs1elementString !== '')">
+	    <hr/>
+	    <p>
+	        <select v-model="whichSST2" class="selectSST">
+            	<option value="0">General retail POS AND general distribution</option>
+            	<option value="1">ONLY General retail POS, NOT in general distribution</option>
+        	</select>&nbsp;
+        	<select v-model="quietZone2" class="selectSST">
+        		<option value="0">excluding quiet zone</option>
+        		<option value="1">including quiet zone</option>
+        	</select>
+        	</p>
+	    <table>
+	        <thead><tr  class="underline"><th v-if="quietZone2==0">Module Count excluding quiet zone</th><th  v-if="quietZone2==1">Module Count including quiet zone</th><th>Minimum size (mm)</th><th>Target size (mm)</th><th>Maximum size (mm)</th></tr></thead>
+	        <tbody>
+	            <tr class="highlight">
+	                <td  v-if="quietZone2==0">{{countModules(gs1elementString)}} x {{countModules(gs1elementString)}}</td>
+	                <td  v-if="quietZone2==1">{{2+countModules(gs1elementString)}} x {{2+countModules(gs1elementString)}}</td>
+	                <td>{{symbolSizeMinimum2(2*quietZone2+countModules(gs1elementString))}}</td><td>{{symbolSizeTarget2(2*quietZone2+countModules(gs1elementString))}}</td><td>{{symbolSizeMaximum2(2*quietZone2+countModules(gs1elementString))}}</td></tr>
+	            <tr class="topline"><td class="bold">Module x-dimensions (mm) &#10132;</td><td>{{symbolSizeMinimum2(1)}}</td><td>{{symbolSizeTarget2(1)}}</td><td>{{symbolSizeMaximum2(1)}}</td></tr>
+	        </tbody>
+	    </table>
+	    
 	</div>
 
 </div> 
 
-<div class="qrpanel2" v-if="mode==1">
-	<select v-model="whichCode" class="selectCode">
-	<option value="0"  v-if="showDLQR">QR code with GS1 Digital Link URI</option>
-	<option value="1">GS1 Data Matrix with element string</option>
-	</select>
-	<div id="gs1DigitalLinkDecode">
-	<textarea v-if="whichCode==0" id="dlInput" v-model="gs1dlURI2decode"></textarea>
-	<textarea v-if="whichCode==1" id="elsInput" v-model="gs1els2decode"></textarea>
-	</div>
-</div>
 
-<div id="decoded" v-if="mode==1">
-	<table id="decodedData">
-	<tbody>
-	<tr><td><span>{{primaryValueExtracted.code}}</span></td><td>{{primaryValueExtracted.value}}</td></tr>
-	<tr v-if="whichCode==0"><td>URI stem</td><td>{{uriStemExtracted}}</td></tr>
-	<tr><td></td><td></td></tr>
-	</tbody>
-	<tbody v-for="ex in dates">
-	<tr class="dates">
-		<td v-bind:title="ex.definition">{{ex.label}}</td>
-		<td><span v-if="s4tObj.obj[ex.code].datatype=='xsd:date'">{{gs1date3(dataExtracted[ex.code])}}</span></td>
-		</tr>
-	</tbody>
-	<tbody v-for="ex in keyQualifiers">
-	<tr class="keyQualifiers">
-		<td v-bind:title="ex.definition">{{ex.label}}</td>
-		<td><span v-if="s4tObj.obj[ex.code].datatype=='xsd:string'">{{dataExtracted[ex.code]}}</span></td>
-		</tr>
-	</tbody>
-	</table>
-
-
-</div>
 </div>
 
 
@@ -401,6 +404,7 @@ function percentEncode(el) {
 			whichCode : 0,
 			errorCorrection : "M",
 			whichSST : "0",
+			whichSST2 : "0",
 			gs1dlt : gs1dlt,
 			showDLQR : showDLQR,
 			validLotOrSerial : validLotOrSerial,
@@ -412,6 +416,7 @@ function percentEncode(el) {
 			targetX : {"0":0.990,"1":0.495},
 			maxX : {"0":0.990,"1":0.990},
 			quietZone : 1,
+			quietZone2 : 1,
 			specifiedURI : ""
           } 
 		},
@@ -615,6 +620,10 @@ function percentEncode(el) {
 				return kvPairs.join("&");
 			},
 			gs1dlURI: function() {
+				let dl = "";
+				if (this.specifiedURI !== "") {
+			        dl= this.specifiedURI;   
+			    } else {
 				let uriStem=this.uriStem.replace(/\/$/,"");
 				let uriStem2 = uriStem;
 				if (this.uriStemCase == "allUpper") {
@@ -632,7 +641,7 @@ function percentEncode(el) {
 					}
 				}
 				let qs=this.queryString.replace(/\%20/g,"+");
-				let dl = "";
+
 				if (this.primaryValue !== "") {
 					dl = uriStem2+"/"+this.primaryAIobj.code+"/"+this.primaryValue+this.pathInfo;
 					
@@ -642,8 +651,8 @@ function percentEncode(el) {
 				}
 				// this.generateQR(dl);
 				this.gs1dlURI2decode = dl;
+			    }
 				return dl;
-				
 			},
 			gs1elementString: function() {
 				let rv="";
@@ -754,12 +763,58 @@ function percentEncode(el) {
 			},
 			symbolSizeMaximum: function() {
 				return Math.floor((this.moduleCount+this.quietZone*(this.whichCode==0 ? 8:2)) * this.maxX[this.whichSST]*1000)/1000;
+			},
+			
+			countModulesEncodedData: function() {
+			    return this.countModules(this.encodedData);
 			}
-			
-			
 		
 		},
 		methods: {
+		    
+		    updateSelectSST2: function() {
+		        this.whichSST2 = this.whichSST;
+		    },
+
+			symbolSizeMinimum2: function(mc) {
+				return Math.floor(mc*this.minX[this.whichSST2]*1000)/1000;
+			},
+			symbolSizeTarget2: function(mc) {
+				return Math.floor(mc*this.targetX[this.whichSST2]*1000)/1000;
+			},
+			symbolSizeMaximum2: function(mc) {
+				return Math.floor(mc*this.maxX[this.whichSST2]*1000)/1000;
+			},
+
+		    
+		    countModules : function(val) {
+			    let rv={};
+				if (this.whichCode==0) { 
+				    if (this.mode==0) {
+						    for (c of ["L","M","Q","H"]) {
+						        rv[c]=updateCanvas("qrcode",val,c)?.modules;
+						    }
+
+    				} else {
+        				if (this.gs1dlURI2decode == "") {  this.gs1dlURI2decode = this.gs1dlURI }
+               				rv=updateCanvas("qrcode",this.gs1dlURI2decode,this.errorCorrection);
+    				}
+
+				    
+				}
+				if (this.whichCode==1) { 
+
+    			    if (this.mode==0) {
+	        			rv= updateCanvas("gs1datamatrix",val,null)?.modules;
+			    	} else {
+				        if (this.gs1els2decode == "") { this.gs1els2decode = this.gs1elementString; }
+	 			        rv= updateCanvas("gs1datamatrix",this.gs1els2decode,null).modules;
+				    }
+
+				}
+				
+				return rv;
+		    },
 		
 		    clearSpecifiedURI : function() {
 		    	this.specifiedURI="";
