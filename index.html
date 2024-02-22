@@ -157,6 +157,7 @@ tr.underline th {border-bottom: 1px solid black;}
 input.needsAttention {background-color: #FFFF00;}
 input.isOK {background-color: #FFFFFF;}
 
+
 </style>
 </head>
 <body>
@@ -259,7 +260,7 @@ input.isOK {background-color: #FFFFFF;}
 	<tr v-if="(imgDataURL !== undefined) && (imgDataURL !== null) && (imgDataURL !== '')"><td colspan="5">&nbsp;</td></tr>
 	<tr v-if="(imgDataURL !== undefined) && (imgDataURL !== null) && (imgDataURL !== '')"><td colspan="5" text-align="center"><img :src="imgDataURL" :style="imgBorderStyle"/></td></tr>
 	<tr v-if="quietZone == 0"><td colspan="5">&nbsp;</td></tr>
-	<tr><td colspan="5"><button @click="openSVG">Open this 2D barcode as SVG file in new browser tab</button></td></tr>
+	<tr><td colspan="5">&nbsp;</td></tr>
 	</tbody>
 	</table>
 	<div v-if="whichCode==0">
@@ -280,6 +281,7 @@ input.isOK {background-color: #FFFFFF;}
 	        <tbody>
 	            <tr v-for="k of Object.keys(countModulesEncodedData)" v-bind:class="{ highlight: (k == errorCorrection) }"><td>{{k}}</td><td  v-if="quietZone2==0">{{countModulesEncodedData[k]}} x {{countModulesEncodedData[k]}}</td><td  v-if="quietZone2==1">{{8+countModulesEncodedData[k]}} x {{8+countModulesEncodedData[k]}}</td><td>{{symbolSizeMinimum2(8*quietZone2+countModulesEncodedData[k])}}</td><td>{{symbolSizeTarget2(8*quietZone2+countModulesEncodedData[k])}}</td><td>{{symbolSizeMaximum2(8*quietZone2+countModulesEncodedData[k])}}</td></tr>
 	            <tr class="topline"><td colspan="2" class="bold">Module x-dimensions (mm) &#10132;</td><td>{{symbolSizeMinimum2(1)}}</td><td>{{symbolSizeTarget2(1)}}</td><td>{{symbolSizeMaximum2(1)}}</td></tr>
+				<tr class="underline"><td colspan="5">&nbsp;</td></tr>
 	        </tbody>
 	    </table>
 	
@@ -309,6 +311,10 @@ input.isOK {background-color: #FFFFFF;}
 	    </table>
 	    
 	</div>
+	<br>
+	<hr/>
+	<p>This 2D barcode is now also available in Scalable Vector Graphics (SVG) format</p>
+	<p><button @click="openSVG">Open in new browser tab</button>&nbsp;&nbsp;<button @click="copySVG">Copy SVG data to the clipboard</button>&nbsp;&nbsp;<a :href="imgSVGurl" v-bind:download="downloadName"><button>Download locally as SVG file</button></a></p>
 
 </div> 
 
@@ -716,6 +722,7 @@ function percentEncode(el) {
 			},
 			
 			"res1" : function() {
+			
 			    if (this.mode==0) {
 					if (this.specifiedURI == "") {
 						return updateCanvas("qrcode",this.gs1dlURI,this.errorCorrection);					
@@ -754,6 +761,12 @@ function percentEncode(el) {
 				if (this.whichCode==1) { return this.res2.svg; }
 			},
 			
+			imgSVGurl: function() {
+				let blob = new Blob([this.svgComment+this.imgSVG], { type: "image/svg+xml" });
+				let url = URL.createObjectURL(blob);
+				return url;
+			},
+			
 			imgBorderStyle: function() {
 				if (this.quietZone == 1) {
 					if (this.whichCode==0) { return "border: 16px solid #CCFFFF;"; }
@@ -774,17 +787,46 @@ function percentEncode(el) {
 			
 			countModulesEncodedData: function() {
 			    return this.countModules(this.encodedData);
+			},
+			
+			downloadName: function() {
+
+				let u=this.encodedData.replace(/[^A-Za-z0-9]/g,"_");
+				
+				
+				if (this.whichCode == 0) {
+					return "QR-"+u+"_ec_"+this.errorCorrection+".svg";
+				}
+				if (this.whichCode == 1) {
+					return "GS1_DataMatrix-"+u+".svg";
+				}
+			},
+			
+			
+			
+			svgComment: function() {
+				if (this.whichCode == 0) {
+					return "<!-- generated for "+this.gs1dlURI+" with error correction: "+this.errorCorrection+" -->\n";
+				}
+				if (this.whichCode == 1) {
+					return "<!-- generated for "+this.gs1elementString+" -->\n";
+				}
 			}
+			
 		
 		},
 		methods: {
 
+
 			openSVG : function() {
-			  const blob = new Blob([this.imgSVG], { type: "image/svg+xml" });
-			  const url = URL.createObjectURL(blob);
-			  const win = open(url);
-			  // win.onload = (evt) => URL.revokeObjectURL(url);			
+			  const win = open(this.imgSVGurl);
 			},
+			
+			copySVG : function() {
+				navigator.clipboard.writeText(this.svgComment+this.imgSVG);
+			},
+
+			
 		    
 		    updateSelectSST2: function() {
 		        this.whichSST2 = this.whichSST;
