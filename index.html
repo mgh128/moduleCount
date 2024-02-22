@@ -259,6 +259,7 @@ input.isOK {background-color: #FFFFFF;}
 	<tr v-if="(imgDataURL !== undefined) && (imgDataURL !== null) && (imgDataURL !== '')"><td colspan="5">&nbsp;</td></tr>
 	<tr v-if="(imgDataURL !== undefined) && (imgDataURL !== null) && (imgDataURL !== '')"><td colspan="5" text-align="center"><img :src="imgDataURL" :style="imgBorderStyle"/></td></tr>
 	<tr v-if="quietZone == 0"><td colspan="5">&nbsp;</td></tr>
+	<tr><td colspan="5"><button @click="openSVG">Open this 2D barcode as SVG file in new browser tab</button></td></tr>
 	</tbody>
 	</table>
 	<div v-if="whichCode==0">
@@ -354,8 +355,9 @@ function updateCanvas(code,stringToEncode,errorCorrection) {
 		// The return value is the canvas element
 		let canvas2 = bwipjs.toCanvas(elem2, o);
 		let dataURL = canvas2.toDataURL('image/png');
+		let svg = bwipjs.toSVG(o);
 		
-		return {"modules":canvas2.width/4,"dataURL":dataURL};		
+		return {"modules":canvas2.width/4,"dataURL":dataURL,"svg":svg };		
 	} catch (e) {
 		// `e` may be a string or Error object
 	}
@@ -746,6 +748,11 @@ function percentEncode(el) {
 				if (this.whichCode==0) { return this.res1.dataURL; }
 				if (this.whichCode==1) { return this.res2.dataURL; }
 			},
+
+			imgSVG: function() {
+				if (this.whichCode==0) { return this.res1.svg; }
+				if (this.whichCode==1) { return this.res2.svg; }
+			},
 			
 			imgBorderStyle: function() {
 				if (this.quietZone == 1) {
@@ -771,6 +778,13 @@ function percentEncode(el) {
 		
 		},
 		methods: {
+
+			openSVG : function() {
+			  const blob = new Blob([this.imgSVG], { type: "image/svg+xml" });
+			  const url = URL.createObjectURL(blob);
+			  const win = open(url);
+			  win.onload = (evt) => URL.revokeObjectURL(url);			
+			},
 		    
 		    updateSelectSST2: function() {
 		        this.whichSST2 = this.whichSST;
