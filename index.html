@@ -5,6 +5,8 @@
 <script src="https://cdn.jsdelivr.net/npm/vue"></script>
 <script src="GS1DigitalLinkToolkit.js"></script>
 <script type="text/javascript" src="dist/bwip-js-min.js"></script>
+<script src="https://github.com/devongovett/pdfkit/releases/download/v0.10.0/pdfkit.standalone.js"></script>
+<script src="https://github.com/devongovett/blob-stream/releases/download/v0.1.3/blob-stream.js"></script>
 <script language="javascript">
 
 var s4tPrimaryIdentifiers=[
@@ -257,10 +259,10 @@ input.isOK {background-color: #FFFFFF;}
 
 	<table style="margin-left: auto; margin-right: auto;">
 	<tbody>
-	<tr v-if="(imgDataURL !== undefined) && (imgDataURL !== null) && (imgDataURL !== '')"><td colspan="5">&nbsp;</td></tr>
+	<!--<tr v-if="(imgDataURL !== undefined) && (imgDataURL !== null) && (imgDataURL !== '')"><td colspan="5">&nbsp;</td></tr>-->
 	<tr v-if="(imgDataURL !== undefined) && (imgDataURL !== null) && (imgDataURL !== '')"><td colspan="5" text-align="center"><img :src="imgDataURL" :style="imgBorderStyle"/></td></tr>
 	<tr v-if="quietZone == 0"><td colspan="5">&nbsp;</td></tr>
-	<tr><td colspan="5">&nbsp;</td></tr>
+	<!--<tr><td colspan="5">&nbsp;</td></tr>-->
 	</tbody>
 	</table>
 	<div v-if="whichCode==0">
@@ -311,10 +313,8 @@ input.isOK {background-color: #FFFFFF;}
 	    </table>
 	    
 	</div>
-	<hr/>
-	<p>This 2D barcode is now also available in Scalable Vector Graphics (SVG) format</p>
 	<p><button @click="openSVG">Open in new browser tab</button>&nbsp;&nbsp;<button @click="copySVG">Copy SVG data to the clipboard</button>&nbsp;&nbsp;<a :href="imgSVGurl" v-bind:download="downloadName"><button>Download locally as SVG file</button></a></p>
-
+	<p><button @click="openPDFreport">Open a PDF report (with 2D barcodes shown at exact 100% scale on A4 sheet)</button></p>
 </div> 
 
 
@@ -323,6 +323,7 @@ input.isOK {background-color: #FFFFFF;}
 
 
 <script language="javascript">
+
 
 	var gtin="";
 	var uriStem="https://example.com";
@@ -819,6 +820,201 @@ function percentEncode(el) {
 
 			openSVG : function() {
 			  const win = open(this.imgSVGurl);
+			},
+			
+			openPDFreport : function() {
+				const doc = new PDFDocument({size: 'A4','layout':'landscape'});
+
+				// pipe the document to a blob
+				const stream = doc.pipe(blobStream());
+
+				const sf=72/25.4;
+
+
+				let xd1=this.symbolSizeMinimum2(1);
+				let xd2=this.symbolSizeTarget2(1);
+				let xd3=this.symbolSizeMaximum2(1);
+
+				let mc1=this.moduleCount;
+				let qz1=this.whichCode==0 ? 4 : 1;
+
+				// draw some text
+				// doc.fontSize(12).fillColor('#0000FF').text('Here are some QR Codes', 10*sf, 5*sf);
+
+				// some vector graphics
+
+				let rl1=10; // red line crosshairs of 15mm
+
+				let ox1=15; // origin x
+				let oy1=100; // origin y
+				let caption1="Minimum";
+
+				let ox2=ox1+(mc1+2*qz1)*xd1+rl1*sf*1.5; // origin x
+				let oy2=100; // origin y
+				let caption2="Target";
+
+				let ox3=ox2+(mc1+2*qz1)*xd2+rl1*sf*1.5; // origin x
+				let oy3=100; // origin y
+				let caption3="Maximum";
+
+				let encodedData = this.whichCode==0 ? this.gs1dlURI : this.gs1elementString;
+				//let scanEnv = "General retail POS and general distribution";
+				let scanEnv = this.whichSST ==0 ? "General retail POS AND general distribution" : "ONLY General retail POS, NOT in general distribution";
+				
+				let errorCorrection = this.errorCorrection;
+
+				let svgdata = this.imgSVG;
+				let re=/<path d="(.+?)"/;
+				let svgpath1 = re.exec(svgdata)[1];
+
+				doc.fontSize(14).fillColor('black').text('', 15*sf,10*sf).text("This report was generated using the tool at https://ref.gs1.org/tools/module-count",{ link: 'https://ref.gs1.org/tools/module-count', underline: true });
+
+				doc.fontSize(14).fillColor('black').text('', 15*sf,20*sf).text("Encoded data:\n"+encodedData);
+
+				let line2="Scanning at: "+scanEnv;
+				if (this.whichCode == 0) {
+				  line2+= " ;      Error correction: "+errorCorrection;
+				}
+				doc.fontSize(14).fillColor('black').text('', 15*sf,40*sf).text(line2);
+
+
+
+				doc.fontSize(12).fillColor('black').text('', ox1*sf-rl1*sf, oy1*sf-rl1*3.5*sf).text("Minimum",{
+				  columns: 1,
+				  columnGap: 0,
+				  height: 100,
+				  width: (mc1+2*qz1)*(xd1*72/25.4)+rl1*2*sf,
+				  align: 'center'
+				});
+
+				doc.fontSize(12).fillColor('black').text('', ox2*sf-rl1*sf, oy2*sf-rl1*3.5*sf).text("Target",{
+				  columns: 1,
+				  columnGap: 0,
+				  height: 100,
+				  width: (mc1+2*qz1)*(xd2*72/25.4)+rl1*2*sf,
+				  align: 'center'
+				});
+
+				doc.fontSize(12).fillColor('black').text('', ox3*sf-rl1*sf, oy3*sf-rl1*3.5*sf).text("Maximum",{
+				  columns: 1,
+				  columnGap: 0,
+				  height: 100,
+				  width: (mc1+2*qz1)*(xd3*72/25.4)+rl1*2*sf,
+				  align: 'center'
+				});
+
+				doc.fontSize(12).fillColor('black').text('', ox1*sf-rl1*sf, oy1*sf-rl1*2.5*sf).text("x = "+xd1+"mm",{
+				  columns: 1,
+				  columnGap: 0,
+				  height: 100,
+				  width: (mc1+2*qz1)*(xd1*72/25.4)+rl1*2*sf,
+				  align: 'center'
+				});
+
+				doc.fontSize(12).fillColor('black').text('', ox2*sf-rl1*sf, oy2*sf-rl1*2.5*sf).text("x = "+xd2+"mm",{
+				  columns: 1,
+				  columnGap: 0,
+				  height: 100,
+				  width: (mc1+2*qz1)*(xd2*72/25.4)+rl1*2*sf,
+				  align: 'center'
+				});
+
+				doc.fontSize(12).fillColor('black').text('', ox3*sf-rl1*sf, oy3*sf-rl1*2.5*sf).text("x = "+xd3+"mm",{
+				  columns: 1,
+				  columnGap: 0,
+				  height: 100,
+				  width: (mc1+2*qz1)*(xd3*72/25.4)+rl1*2*sf,
+				  align: 'center'
+				});
+
+
+				drawQR(doc,ox1,oy1,rl1,xd1,mc1,qz1,svgpath1);
+				drawQR(doc,ox2,oy2,rl1,xd2,mc1,qz1,svgpath1);
+				drawQR(doc,ox3,oy3,rl1,xd3,mc1,qz1,svgpath1);
+
+				function drawQR(d,ox,oy,rl,xd,mc,qz,svgpath) {
+
+
+					let w1=Math.floor((mc+2*qz)*(xd*1000))/1000;
+					let wt1=w1+"mm";  
+
+					let w2=Math.floor((mc+0*qz)*(xd*1000))/1000;
+					let wt2=w2+"mm";  
+
+
+				  d.moveTo(ox*sf,oy*sf).lineTo((ox-rl)*sf,oy*sf).lineWidth(1).strokeColor('red').stroke();
+				  d.moveTo(ox*sf,oy*sf).lineTo(ox*sf,(oy-rl)*sf).lineWidth(1).strokeColor('red').stroke();
+				  d.moveTo(ox*sf,oy*sf+(mc+2*qz)*(xd*72/25.4)).lineTo((ox-rl)*sf,oy*sf+(mc+2*qz)*(xd*72/25.4)).lineWidth(1).strokeColor('red').stroke();
+				  d.moveTo(ox*sf,oy*sf+(mc+2*qz)*(xd*72/25.4)).lineTo(ox*sf,(oy+rl)*sf+(mc+2*qz)*(xd*72/25.4)).lineWidth(1).strokeColor('red').stroke();
+				  d.moveTo(ox*sf+(mc+2*qz)*(xd*72/25.4),oy*sf).lineTo(ox*sf+(mc+2*qz)*(xd*72/25.4),(oy-rl)*sf).lineWidth(1).strokeColor('red').stroke();
+				  d.moveTo(ox*sf+(mc+2*qz)*(xd*72/25.4),oy*sf).lineTo((ox+rl)*sf+(mc+2*qz)*(xd*72/25.4),oy*sf).lineWidth(1).strokeColor('red').stroke();
+				  d.moveTo(ox*sf+(mc+2*qz)*(xd*72/25.4),oy*sf+(mc+2*qz)*(xd*72/25.4)).lineTo(ox*sf+(mc+2*qz)*(xd*72/25.4),(oy+rl)*sf+(mc+2*qz)*(xd*72/25.4)).lineWidth(1).strokeColor('red').stroke();
+				  d.moveTo(ox*sf+(mc+2*qz)*(xd*72/25.4),oy*sf+(mc+2*qz)*(xd*72/25.4)).lineTo((ox+rl)*sf+(mc+2*qz)*(xd*72/25.4),oy*sf+(mc+2*qz)*(xd*72/25.4)).lineWidth(1).strokeColor('red').stroke();
+
+					d.moveTo(ox*sf,oy*sf-rl*sf).lineTo((ox*sf+(mc+2*qz)*(xd*72/25.4)),oy*sf-rl*sf).lineWidth(1).strokeColor('#0000FF').stroke();
+					d.moveTo(ox*sf,oy*sf-rl*sf).lineTo(ox*sf+rl*sf/4,oy*sf-rl*sf*1.25).lineWidth(1).strokeColor('#0000FF').stroke();
+					d.moveTo(ox*sf,oy*sf-rl*sf).lineTo(ox*sf+rl*sf/4,oy*sf-rl*sf*0.75).lineWidth(1).strokeColor('#0000FF').stroke();
+					d.moveTo(ox*sf+(mc+2*qz)*(xd*72/25.4),oy*sf-rl*sf).lineTo(ox*sf+(mc+2*qz)*(xd*72/25.4)-rl*sf/4,oy*sf-rl*sf*1.25).lineWidth(1).strokeColor('#0000FF').stroke();
+					d.moveTo(ox*sf+(mc+2*qz)*(xd*72/25.4),oy*sf-rl*sf).lineTo(ox*sf+(mc+2*qz)*(xd*72/25.4)-rl*sf/4,oy*sf-rl*sf*0.75).lineWidth(1).strokeColor('#0000FF').stroke();
+
+					d.moveTo(ox*sf+qz*xd*72/25.4,oy*sf+(mc+2*qz)*(xd*72/25.4)+rl*sf).lineTo((ox*sf+(mc+2*qz)*(xd*72/25.4)-+qz*xd*72/25.4),oy*sf+(mc+2*qz)*(xd*72/25.4)+rl*sf).lineWidth(1).strokeColor('#0000FF').stroke();
+					d.moveTo(ox*sf+qz*xd*72/25.4,oy*sf+(mc+2*qz)*(xd*72/25.4)+rl*sf).lineTo(ox*sf+rl*sf/4+qz*xd*72/25.4,oy*sf+(mc+2*qz)*(xd*72/25.4)+rl*sf*1.25).lineWidth(1).strokeColor('#0000FF').stroke();
+					d.moveTo(ox*sf+qz*xd*72/25.4,oy*sf+(mc+2*qz)*(xd*72/25.4)+rl*sf).lineTo(ox*sf+rl*sf/4+qz*xd*72/25.4,oy*sf+(mc+2*qz)*(xd*72/25.4)+rl*sf*0.75).lineWidth(1).strokeColor('#0000FF').stroke();
+					d.moveTo(ox*sf+(mc+2*qz)*(xd*72/25.4)-qz*xd*72/25.4,oy*sf+(mc+2*qz)*(xd*72/25.4)+rl*sf).lineTo(ox*sf+(mc+2*qz)*(xd*72/25.4)-qz*xd*72/25.4-rl*sf/4,oy*sf+(mc+2*qz)*(xd*72/25.4)+rl*sf*1.25).lineWidth(1).strokeColor('#0000FF').stroke();
+					d.moveTo(ox*sf+(mc+2*qz)*(xd*72/25.4)-qz*xd*72/25.4,oy*sf+(mc+2*qz)*(xd*72/25.4)+rl*sf).lineTo(ox*sf+(mc+2*qz)*(xd*72/25.4)-qz*xd*72/25.4-rl*sf/4,oy*sf+(mc+2*qz)*(xd*72/25.4)+rl*sf*0.75).lineWidth(1).strokeColor('#0000FF').stroke();
+
+
+				d.fontSize(12).fillColor('#0000FF').text('', ox*sf-rl1*sf, oy*sf-rl*sf*1.75).text(wt1,{
+				  columns: 1,
+				  columnGap: 0,
+				  height: 100,
+				  width: (mc+2*qz)*(xd*72/25.4)+2*rl1*sf,
+				  align: 'center'
+				});
+
+
+
+
+				d.fontSize(12).fillColor('#0000FF').text('', ox*sf-rl1*sf, oy*sf+(mc+2*qz)*(xd*72/25.4)+rl*sf*1.5).text(wt2,{
+				  columns: 1,
+				  columnGap: 0,
+				  height: 100,
+				  width: (mc+2*qz)*(xd*72/25.4)+2*rl1*sf,
+				  align: 'center'
+				});
+
+				// 196 point height and width for a 49x49 module excluding quiet margin
+				// x-dimension of 0.743mm 
+				// at 49x49 excluding quiet margin of 4 modules on each side,
+				// size should be 36.407mm = 49*0.743*72/25.4 points = 103.2 points
+				// but without scaling, is rendered as 49*4 = 196 points.
+				// so scale factor = 0.743*18/25.4 = 0.5265354331
+
+
+				// an SVG path
+
+				d
+				   .translate(ox*sf+(qz*xd)*72/25.4,oy*sf+(qz*xd)*72/25.4)
+				   .scale(xd*18/25.4)
+				   .path(svgpath)
+				   .fill('black','even-odd')
+				   .scale(25.4/18/xd)
+				   .translate(-ox*sf-(qz*xd)*72/25.4,-oy*sf-(qz*xd)*72/25.4)
+				   .restore();
+   
+  
+				}
+
+
+				// end and display the document in the iframe to the right
+				doc.end();
+				stream.on('finish', function() {
+					const url = stream.toBlobURL('application/pdf');
+					window.open(url, '_blank');
+
+				});
+				
+
 			},
 			
 			copySVG : function() {
