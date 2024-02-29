@@ -846,15 +846,15 @@ function percentEncode(el) {
 				let rl1=10; // red line crosshairs of 15mm
 
 				let ox1=15; // origin x
-				let oy1=100; // origin y
+				let oy1=90; // origin y
 				let caption1="Minimum";
 
-				let ox2=ox1+(mc1+2*qz1)*xd1+rl1*sf*1.5; // origin x
-				let oy2=100; // origin y
+				let ox2=ox1+(mc1+2*qz1)*xd1+rl1*sf*1; // origin x
+				let oy2=90; // origin y
 				let caption2="Target";
 
-				let ox3=ox2+(mc1+2*qz1)*xd2+rl1*sf*1.5; // origin x
-				let oy3=100; // origin y
+				let ox3=ox2+(mc1+2*qz1)*xd2+rl1*sf*1; // origin x
+				let oy3=90; // origin y
 				let caption3="Maximum";
 
 				let encodedData = this.whichCode==0 ? this.gs1dlURI : this.gs1elementString;
@@ -875,7 +875,7 @@ function percentEncode(el) {
 				if (this.whichCode == 0) {
 				  line2+= " ;      Error correction: "+errorCorrection;
 				}
-				doc.fontSize(14).fillColor('black').text('', 15*sf,40*sf).text(line2);
+				doc.fontSize(14).fillColor('black').text('', 15*sf,45*sf).text(line2);
 
 
 
