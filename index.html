@@ -16,10 +16,13 @@ var s4tPrimaryIdentifiers=[
 
 
 var s4tTermsES=[
-{"code":'17',"label":'Expiration date',"grouping":'Dates',"datatype":"xsd:date","definition":"Expiration date","example":"2024-03-31","percentEncoded":false,"orderES":0,"orderDL":9},
 {"code":'22',"label":'Consumer Product Variant',"grouping":'KeyQualifiers',"datatype":"xsd:string","definition":'Consumer Product Variant',"example":"EFG456","percentEncoded":false,"maxLength":20,"orderES":1,"orderDL":1},
 {"code":'10',"label":'Batch/Lot',"grouping":'KeyQualifiers',"datatype":"xsd:string","definition":'Batch/Lot ID',"example":"ABC123","percentEncoded":false,"maxLength":20,"orderES":1,"orderDL":2},
-{"code":'21',"label":'Serial number',"grouping":'KeyQualifiers',"datatype":"xsd:string","definition":'Serial number',"example":"987XYZ","percentEncoded":false,"maxLength":20,"orderES":1,"orderDL":3}
+{"code":'21',"label":'Serial number',"grouping":'KeyQualifiers',"datatype":"xsd:string","definition":'Serial number',"example":"987XYZ","percentEncoded":false,"maxLength":20,"orderES":1,"orderDL":3},
+{"code":'17',"label":'Expiration date',"grouping":'Dates',"datatype":"xsd:date","definition":"Expiration date","example":"2024-03-31","percentEncoded":false,"orderES":0,"orderDL":9},
+{"code":'15',"label":'Best before date',"grouping":'Dates',"datatype":"xsd:date","definition":"Best before date","example":"2024-03-29","percentEncoded":false,"orderES":0,"orderDL":9},
+{"code":'392n',"label":'Price in local currency',"grouping":'Prices',"datatype":"gs1:PriceSpecification","definition":"Price in local currency","example":"9.95","percentEncoded":false,"orderES":0,"orderDL":9},
+{"code":'310n',"label":'Net Weight (kg)',"grouping":'Weights',"datatype":"gs1:QuantitativeValue","definition":"Net Weight (kg)","example":"0.195","percentEncoded":false,"orderES":0,"orderDL":9}
 ];
 
 
@@ -101,7 +104,6 @@ function processS4Tarray(terms) {
 var s4tObj=processS4Tarray(s4tTermsES.sort(onWhat("orderDL")));
 var s4tObjES=processS4Tarray(s4tTermsES.sort(onWhat("orderES")));
 
-var mode=0;
 
 var zeroToFive=["0","1","2","3","4","5"];
 
@@ -115,6 +117,8 @@ body { font-family: Verdana; }
 h1 {text-align: center;}
 h2 {text-align: center;}
 tr.dates { background-color: #FFCCCC;}
+tr.prices { background-color: #CCFFCC;}
+tr.weights { background-color: #CCFFFF;}
 tr.shippingAddress { background-color: #FFFFCC;}
 tr.deliveryInstructions { background-color: #CCFFCC;}
 tr.returnAddress { background-color: #CCCCFF;}
@@ -177,7 +181,8 @@ input.isOK {background-color: #FFFFFF;}
 	<tr><td>Choose 2D symbol</td><td colspan="3">
 	<select v-model="whichCode" class="selectCode">
 	<option value="0">QR code with GS1 Digital Link URI</option>
-	<option value="1">GS1 Data Matrix with element string</option>
+	<option value="1">GS1 DataMatrix with element string</option>
+	<option value="2">Data Matrix with GS1 Digital Link URI</option>
 	</select>
 	</td></tr>
 	<tr v-if="whichCode==0">
@@ -189,14 +194,14 @@ input.isOK {background-color: #FFFFFF;}
 	<option value="H">High</option>
 	</select>	
 	</td></tr>
-	<tr v-if="whichCode==0"><td>Enter any URI (optional):</td><td colspan="3"><input type="text" class="maxWidth" v-model="specifiedURI"/><input type="button" value="Clear" @click="clearSpecifiedURI"></td></tr>
+	<tr v-if="(whichCode==0) || (whichCode==2)"><td>Enter any URI (optional):</td><td colspan="3"><input type="text" class="maxWidth" v-model="specifiedURI"/><input type="button" value="Clear" @click="clearSpecifiedURI"></td></tr>
 	
 	<tr v-if="specifiedURI == ''"><td>GTIN</td><td colspan="2"><input class="maxWidth" type="text" v-model="primaryValue"></td><td><input type="button" value="demo" @click="demoData2(primaryAIobj.example)"></td></tr>
 	<tr v-if="(specifiedURI == '') && (!gtinIs14digits)"><td></td><td colspan="3">^^ Please enter a GTIN as exactly 14 digits</td></tr>
 	<tr v-if="(specifiedURI == '') && (((gtinCheckDigit !== null) && !(gtinCheckDigitIsValid)))"><td></td><td colspan="3">^^ Invalid GTIN check digit - should be <span v-if="gtinCheckDigit !== null">{{gtinCheckDigit}} <button @click="correctGTINcheckDigit()">Fix</button></span></td></tr>
 	<tr v-if="specifiedURI == ''" ><td colspan="5">&nbsp;</td></tr>
-	<tr v-if="(specifiedURI == '') && (whichCode==0)"><td>URI stem</td><td colspan="3"><input class="maxWidth" type="text" v-model="uriStem"></td></tr>
-	<tr v-if="(specifiedURI == '') && (whichCode==0)"><td></td><td colspan="2"><select v-model="uriStemCase"><option value="unchanged">as typed</option><option value="allUpper">ALL UPPER CASE</option><option value="partUpper">UPPER CASE DOMAIN & PROTOCOL</option><option value="allLower">all lower case</option></select></td></tr>
+	<tr v-if="(specifiedURI == '') && ((whichCode==0) || (whichCode==2))"><td>URI stem</td><td colspan="3"><input class="maxWidth" type="text" v-model="uriStem"></td></tr>
+	<tr v-if="(specifiedURI == '') && ((whichCode==0) || (whichCode==2))"><td></td><td colspan="2"><select v-model="uriStemCase"><option value="unchanged">as typed</option><option value="allUpper">ALL UPPER CASE</option><option value="partUpper">UPPER CASE DOMAIN & PROTOCOL</option><option value="allLower">all lower case</option></select></td></tr>
 	</tbody>
 	</table>
 	
@@ -204,20 +209,7 @@ input.isOK {background-color: #FFFFFF;}
 	<thead>
 	<tr><th colspan="3"></th><th>AI</th><th># chrs</th></tr>
 	</thead>
-	<tbody v-for="ex in dates">
-	<tr class="dates">
-		<td v-bind:title="ex.definition">{{ex.label}}</td>
-		<td>
-			<span v-if="s4tObj.obj[ex.code].datatype=='xsd:string'"><input type="text" v-model="s4tData[ex.code]" class="maxWidth"></span>
-			<span v-if="s4tObj.obj[ex.code].datatype=='xsd:date'"><input class="date" type="date" v-model="s4tData[ex.code]"></span>
-			<span v-if="s4tObj.obj[ex.code].datatype=='xsd:boolean'"><select v-model="s4tData[ex.code]"><option value="1">Yes</option><option value="0">No</option></select></span>
-		</td>
-		<td><input type="button" value="demo" @click="demoData(ex.code)"><input type="button" value="clear" @click="clearData(ex.code)"></td>
-		<td class="s4tCode">&nbsp;{{ex.code}}&nbsp;</td>
-		<td></td>
-	</tr>
-	</tbody>
-	
+
 	<tbody v-if="specifiedURI == ''" v-for="ex in keyQualifiers">
 	<tr class="keyQualifiers">
 		<td v-bind:title="ex.definition">{{ex.label}}</td>
@@ -234,6 +226,47 @@ input.isOK {background-color: #FFFFFF;}
 	<tr v-if="((ex.code == '10') && !(validLotOrSerial(lot)))"><td></td><td colspan="3">^^ {{lot}} is invalid.  A valid batch/lot number should not exceed 20 characters, all from the GS1 82-character encodable character set</td></tr>
 	<tr v-if="((ex.code == '21') && !(validLotOrSerial(serial)))"><td></td><td colspan="3">^^ {{serial}} is invalid.  A valid serial number should not exceed 20 characters, all from the GS1 82-character encodable character set</td></tr>
 	</tbody>
+	
+	<tbody v-for="ex in dates">
+	<tr class="dates">
+		<td v-bind:title="ex.definition">{{ex.label}}</td>
+		<td>
+			<span v-if="s4tObj.obj[ex.code]?.datatype=='xsd:string'"><input type="text" v-model="s4tData[ex.code]" class="maxWidth"></span>
+			<span v-if="s4tObj.obj[ex.code]?.datatype=='xsd:date'"><input class="date" type="date" v-model="s4tData[ex.code]"></span>
+			<span v-if="s4tObj.obj[ex.code]?.datatype=='xsd:boolean'"><select v-model="s4tData[ex.code]"><option value="1">Yes</option><option value="0">No</option></select></span>
+		</td>
+		<td><input type="button" value="demo" @click="demoData(ex.code)"><input type="button" value="clear" @click="clearData(ex.code)"></td>
+		<td class="s4tCode">&nbsp;{{ex.code}}&nbsp;</td>
+		<td></td>
+	</tr>
+	</tbody>
+	
+	<tbody v-for="ex in weights">
+	<tr class="weights">
+		<td v-bind:title="ex.definition">{{ex.label}}</td>
+		<td>
+			<span v-if="s4tObj.obj[ex.code]?.datatype =='gs1:QuantitativeValue'"><input type="text" v-model="s4tData[ex.code]" class="maxWidth"></span>
+		</td>
+		<td><input type="button" value="demo" @click="demoData(ex.code)"><input type="button" value="clear" @click="clearData(ex.code)"></td>
+		<td class="s4tCode">&nbsp;{{ex.code}}&nbsp;</td>
+		<td></td>
+	</tr>
+	</tbody>
+
+	<tbody v-for="ex in prices">
+	<tr class="prices">
+		<td v-bind:title="ex.definition">{{ex.label}}</td>
+		<td>
+			<span v-if="s4tObj.obj[ex.code]?.datatype =='gs1:PriceSpecification'"><input type="text" v-model="s4tData[ex.code]" class="maxWidth"></span>
+		</td>
+		<td><input type="button" value="demo" @click="demoData(ex.code)"><input type="button" value="clear" @click="clearData(ex.code)"></td>
+		<td class="s4tCode">&nbsp;{{ex.code}}&nbsp;</td>
+		<td></td>
+	</tr>
+	</tbody>
+	
+	
+	
 	</table>
 	
 	<table>
@@ -252,8 +285,8 @@ input.isOK {background-color: #FFFFFF;}
 
 </div>
 
-<div class="qrpanel1" v-if="mode==0">
-	<textarea id="dlOutput" v-if="whichCode==0" :value="gs1dlURI" @change="changedDLoutput($event)"></textarea>
+<div class="qrpanel1">
+	<textarea id="dlOutput" v-if="(whichCode==0) || (whichCode==2)" :value="gs1dlURI" @change="changedDLoutput($event)"></textarea>
 	<textarea id="elsOutput" v-if="whichCode==1" :value="gs1elementString" @change="changedESoutput($event)"></textarea>
 	<div v-if="this.primaryValue !== '' || this.specifiedURI !== ''" id="stats"><p>{{moduleCount}}x{{moduleCount}} modules plus a quiet zone of {{whichCode==0 ? "4 modules" : "1 module"}} on each side.</p>
 
@@ -265,7 +298,7 @@ input.isOK {background-color: #FFFFFF;}
 	<!--<tr><td colspan="5">&nbsp;</td></tr>-->
 	</tbody>
 	</table>
-	<div v-if="whichCode==0">
+	<div v-if="(whichCode==0)">
 
     <hr/>
 	    <p>
@@ -283,6 +316,33 @@ input.isOK {background-color: #FFFFFF;}
 	        <tbody>
 	            <tr v-for="k of Object.keys(countModulesEncodedData)" v-bind:class="{ highlight: (k == errorCorrection) }"><td>{{k}}</td><td  v-if="quietZone2==0">{{countModulesEncodedData[k]}} x {{countModulesEncodedData[k]}}</td><td  v-if="quietZone2==1">{{8+countModulesEncodedData[k]}} x {{8+countModulesEncodedData[k]}}</td><td>{{symbolSizeMinimum2(8*quietZone2+countModulesEncodedData[k])}}</td><td>{{symbolSizeTarget2(8*quietZone2+countModulesEncodedData[k])}}</td><td>{{symbolSizeMaximum2(8*quietZone2+countModulesEncodedData[k])}}</td></tr>
 	            <tr class="topline"><td colspan="2" class="bold">Module x-dimensions (mm) &#10132;</td><td>{{symbolSizeMinimum2(1)}}</td><td>{{symbolSizeTarget2(1)}}</td><td>{{symbolSizeMaximum2(1)}}</td></tr>
+				<tr class="underline"><td colspan="5">&nbsp;</td></tr>
+	        </tbody>
+	    </table>
+	
+	
+	</div>
+	<div v-if="(whichCode==2)">
+
+    <hr/>
+	    <p>
+	        <select v-model="whichSST2" class="selectSST">
+            	<option value="0">General retail POS AND general distribution</option>
+            	<option value="1">ONLY General retail POS, NOT in general distribution</option>
+        	</select>&nbsp;
+        	<select v-model="quietZone2" class="selectSST">
+        		<option value="0">excluding quiet zone</option>
+        		<option value="1">including quiet zone</option>
+        	</select>
+        	</p>
+	    <table>
+	        <thead><tr class="underline"><th v-if="quietZone2==0">Module Count excluding quiet zone</th><th  v-if="quietZone2==1">Module Count including quiet zone</th><th>Minimum size (mm)</th><th>Target size (mm)</th><th>Maximum size (mm)</th></tr></thead>
+	        <tbody>
+	            <tr class="highlight">
+	                <td  v-if="quietZone2==0">{{countModulesEncodedData}} x {{countModulesEncodedData}}</td>
+	                <td  v-if="quietZone2==1">{{2+countModulesEncodedData}} x {{2+countModulesEncodedData}}</td>
+	                <td>{{symbolSizeMinimum2(2*quietZone2+countModulesEncodedData)}}</td><td>{{symbolSizeTarget2(2*quietZone2+countModulesEncodedData)}}</td><td>{{symbolSizeMaximum2(2*quietZone2+countModulesEncodedData)}}</td></tr>
+	            <tr class="topline"><td class="bold">Module x-dimensions (mm) &#10132;</td><td>{{symbolSizeMinimum2(1)}}</td><td>{{symbolSizeTarget2(1)}}</td><td>{{symbolSizeMaximum2(1)}}</td></tr>
 				<tr class="underline"><td colspan="5">&nbsp;</td></tr>
 	        </tbody>
 	    </table>
@@ -402,7 +462,6 @@ function percentEncode(el) {
 			primaryValue: primaryValue,
 			uriStem: uriStem,
 			s4tData: s4tData,
-			mode: mode,
 			booleans: booleans,
 			zeroToFive: zeroToFive,
 			gs1dlURI2decode : gs1dlURI2decode,
@@ -453,6 +512,13 @@ function percentEncode(el) {
 			dates: function() {
 				return s4tTermsES.filter(filterByGrouping("Dates"));
 			},
+			weights: function() {
+				return s4tTermsES.filter(filterByGrouping("Weights"));
+			},
+			prices: function() {
+				return s4tTermsES.filter(filterByGrouping("Prices"));
+			},
+
 			
 			pathInfo: function() {
 			 let rv="";
@@ -502,7 +568,7 @@ function percentEncode(el) {
 
 
 			dataExtracted: function() {
-				if (this.whichCode ==0) {
+				if ((this.whichCode ==0) || (this.whichCode ==2)) {
 				return gs1dlt.extractFromGS1digitalLink(this.gs1dlURI2decode);
 				} else {
 				return gs1dlt.extractFromGS1elementStrings(this.gs1els2decode);
@@ -510,111 +576,40 @@ function percentEncode(el) {
 			},
 	
 			
-			s4tDetected : function() {
-				let rv="No";
-				if (this.whichCode ==0) {
-				if (this.gs1dlURI2decode.slice(-4) == "&s4t") {
-				rv="Yes";
-				}
-				}
-				return rv;
-			},
-
 
 			
-			primaryValueExtracted : function() {
-				let pathInfo="";
-				let rv={};
-				let c={"01":"GTIN"};
-				let digits=new RegExp("^(\\d+?)");
-				if (this.whichCode ==0) {
-				
-					if (this.gs1dlURI2decode !== undefined && this.gs1dlURI2decode !== null && this.gs1dlURI2decode !== "") {
-						var obj2=gs1dlt.extractFromGS1digitalLink(this.gs1dlURI2decode);
-
-						rv.code="01";
-						rv.value=obj2["01"];
-
-/*						var inq = this.gs1dlURI2decode.indexOf("?");
-						if (inq== -1) {
-							pathInfo = this.gs1dlURI2decode;
-						} else {
-							pathInfo = this.gs1dlURI2decode.substr(0,this.gs1dlURI2decode.indexOf("?"));
-						}
-						var rePath=new RegExp("\\/(gtin|01)\\/(\\d{4}.+?)$");
-						if (rePath.test(pathInfo)) {
-							let code=pathInfo.match(rePath)[1].toUpperCase();
-							if (digits.test(code)) {
-								code=c[code];
-							}			
-							rv.code=code;	
-							rv.value=pathInfo.match(rePath)[2];
-						} else {
-							rv.code="";
-							rv.value="";
-						}
-*/
-
-
-					}
-				
-				} else {
-						let qso={};
-						let els=this.gs1els2decode;
-						let splits=els.match(/(\(\d{2,4}\))|([^(]+)/g);
-						for (let i=0; i<splits.length/2; i++) {
-							let k=splits[i*2].replace(/[()]/g,"");
-							let v=splits[1+i*2].replace(/\+/g,"%20");
-							qso[k]=decodeURIComponent(v);;
-						}
-						rv.code="GTIN";
-						rv.value=qso["01"];
-				
-				}
-				return rv;
-			},
-			uriStemExtracted: function() {
-				var uriStem="";
-				if (this.whichCode ==0 ) {
-					if (this.gs1dlURI2decode !== undefined && this.gs1dlURI2decode !== null && this.gs1dlURI2decode !== "") {
-						var inq = this.gs1dlURI2decode.indexOf("?");
-						if (inq== -1) {
-							pathInfo = this.gs1dlURI2decode;
-						} else {
-							pathInfo = this.gs1dlURI2decode.substr(0,this.gs1dlURI2decode.indexOf("?"));
-						}
-						var rePath=new RegExp("\\/(gtin|01)\\/(\\d{4}.+?)$");
-					
-						if (rePath.test(pathInfo)) { 
-							let l=pathInfo.match(rePath)[0].length;
-							uriStem = pathInfo.substr(0,pathInfo.length-l);
-						}						
-					}
-				}
-				return uriStem;				
-			},
 			
 			queryString: function() {
 				s4to=JSON.parse(this.s4tDataJSON);
 				kvPairs=[];
 				s4tObj.orderedKeys.forEach(function(k) {
+				
+				
 				let xc = this.primaryAIobj;
 				
-					if (!((k == "10") || (k== "21") || (k== "22"))) {
+					if (!(   (k == "10") || (k== "21") || (k== "22")   )) {
 				
 						if ((s4to.hasOwnProperty(k)) && (s4to[k] !== "")) {
 							var valToEncode="";
-							if (this.s4tObj.obj[k].datatype=="xsd:date") {							
+							if (this.s4tObj.obj[k]?.datatype=="xsd:date") {							
 								valToEncode=gs1date(s4to[k]);
 							}
-							if (this.s4tObj.obj[k].datatype=="xsd:dateTime") {							
+							if (this.s4tObj.obj[k]?.datatype=="xsd:dateTime") {							
 								valToEncode=gs1dateTime(s4to[k]);
 							}
-							if (this.s4tObj.obj[k].datatype=="gs1:Measurement") {
+							if (this.s4tObj.obj[k]?.datatype=="gs1:QuantitativeValue") {
 								var rv=gs1measurement(s4to[k]);
 								valToEncode = rv.sixdigit;
 								k=k.replace("n",rv.ndp);
 							}
+
+							if (this.s4tObj.obj[k]?.datatype=="gs1:PriceSpecification") {
+								var rv=gs1measurement(s4to[k]);
+								valToEncode = rv.sixdigit;
+								k=k.replace("n",rv.ndp);
+							}
+							
+							
 							if (valToEncode ==  "") {
 								valToEncode=encodeURIComponent(s4to[k]);
 							}
@@ -625,6 +620,7 @@ function percentEncode(el) {
 					}
 				
 				});
+				
 				return kvPairs.join("&");
 			},
 			gs1dlURI: function() {
@@ -673,16 +669,24 @@ function percentEncode(el) {
 				s4tObjES.orderedKeys.forEach(function(k) {
 				let xc = this.primaryAIobj;
 				
+
+
 				
 					if ((s4to.hasOwnProperty(k)) && (s4to[k] !== "")) {
 						var valToEncode="";
-						if (this.s4tObj.obj[k].datatype=="xsd:date") {							
+						if (this.s4tObj.obj[k]?.datatype=="xsd:date") {							
 							valToEncode=gs1date(s4to[k]);
 						}
-						if (this.s4tObj.obj[k].datatype=="xsd:dateTime") {							
+						if (this.s4tObj.obj[k]?.datatype=="xsd:dateTime") {							
 							valToEncode=gs1dateTime(s4to[k]);
 						}
-						if (this.s4tObj.obj[k].datatype=="gs1:Measurement") {
+						if (this.s4tObj.obj[k]?.datatype=="gs1:QuantitativeValue") {
+							var rv=gs1measurement(s4to[k]);
+							valToEncode = rv.sixdigit;
+							k=k.replace("n",rv.ndp);
+						}
+
+						if (this.s4tObj.obj[k]?.datatype=="gs1:PriceSpecification") {
 							var rv=gs1measurement(s4to[k]);
 							valToEncode = rv.sixdigit;
 							k=k.replace("n",rv.ndp);
@@ -713,52 +717,37 @@ function percentEncode(el) {
 			},
 			
 			"encodedData" : function() {
-				if (this.mode == 0) {
 					if (this.specifiedURI !== "") { return this.specifiedURI } else { return this.gs1dlURI }
-				}
-				if (this.mode == 1) {
-					return this.gs1elementString;
-				}
 			},
 			
-			"res1" : function() {
-			
-			    if (this.mode==0) {
-					if (this.specifiedURI == "") {
-						return updateCanvas("qrcode",this.gs1dlURI,this.errorCorrection);					
-					} else {
-						return updateCanvas("qrcode",this.specifiedURI,this.errorCorrection);					
-					}
-				
-				} else {
-				if (this.gs1dlURI2decode == "") {  this.gs1dlURI2decode = this.gs1dlURI }
-				return updateCanvas("qrcode",this.gs1dlURI2decode,this.errorCorrection);
-				}
+			"res1" : function() {			
+					return updateCanvas("qrcode", this.encodedData, this.errorCorrection);
 			},
 			"res2" : function() {
-			    if (this.mode==0) {
 				return updateCanvas("gs1datamatrix",this.gs1elementString,null);
-				} else {
-				if (this.gs1els2decode == "") { this.gs1els2decode = this.gs1elementString; }
-	 			return updateCanvas("gs1datamatrix",this.gs1els2decode,null);
-				}
+			},
+			"res3" : function() {
+					return updateCanvas("datamatrix", this.encodedData,null);
 			},
 
 			
 			
 			moduleCount: function() {
-				if (this.whichCode==0) { return this.res1.modules; }
-				if (this.whichCode==1) { return this.res2.modules; }
+				if (this.whichCode==0) { return this.res1?.modules; }
+				if (this.whichCode==1) { return this.res2?.modules; }
+				if (this.whichCode==2) { return this.res3?.modules; }
 			},
 
 			imgDataURL: function() {
-				if (this.whichCode==0) { return this.res1.dataURL; }
-				if (this.whichCode==1) { return this.res2.dataURL; }
+				if (this.whichCode==0) { return this.res1?.dataURL; }
+				if (this.whichCode==1) { return this.res2?.dataURL; }
+				if (this.whichCode==2) { return this.res3?.dataURL; }
 			},
 
 			imgSVG: function() {
-				if (this.whichCode==0) { return this.res1.svg; }
-				if (this.whichCode==1) { return this.res2.svg; }
+				if (this.whichCode==0) { return this.res1?.svg; }
+				if (this.whichCode==1) { return this.res2?.svg; }
+				if (this.whichCode==2) { return this.res3?.svg; }
 			},
 			
 			imgSVGurl: function() {
@@ -771,6 +760,7 @@ function percentEncode(el) {
 				if (this.quietZone == 1) {
 					if (this.whichCode==0) { return "border: 16px solid #CCFFFF;"; }
 					if (this.whichCode==1) { return "border: 4px solid #CCFFFF;"; }		
+					if (this.whichCode==2) { return "border: 4px solid #CCFFFF;"; }		
 				}	
 			},
 			
@@ -800,6 +790,9 @@ function percentEncode(el) {
 				if (this.whichCode == 1) {
 					return "GS1_DataMatrix-"+u+".svg";
 				}
+				if (this.whichCode == 2) {
+					return "Data_Matrix-"+u+".svg";
+				}
 			},
 			
 			
@@ -810,6 +803,9 @@ function percentEncode(el) {
 				}
 				if (this.whichCode == 1) {
 					return "<!-- generated for "+this.gs1elementString+" -->\n";
+				}
+				if (this.whichCode == 2) {
+					return "<!-- generated for "+this.gs1dlURI+" -->\n";
 				}
 			}
 			
@@ -857,7 +853,7 @@ function percentEncode(el) {
 				let oy3=90; // origin y
 				let caption3="Maximum";
 
-				let encodedData = this.whichCode==0 ? this.gs1dlURI : this.gs1elementString;
+				let encodedData = ((this.whichCode==0) || (this.whichCode==2)) ? this.gs1dlURI : this.gs1elementString;
 				//let scanEnv = "General retail POS and general distribution";
 				let scanEnv = this.whichSST2 ==0 ? "General retail POS AND general distribution" : "ONLY General retail POS, NOT in general distribution";
 				
@@ -1041,27 +1037,15 @@ function percentEncode(el) {
 		    countModules : function(val) {
 			    let rv={};
 				if (this.whichCode==0) { 
-				    if (this.mode==0) {
-						    for (c of ["L","M","Q","H"]) {
-						        rv[c]=updateCanvas("qrcode",val,c)?.modules;
-						    }
-
-    				} else {
-        				if (this.gs1dlURI2decode == "") {  this.gs1dlURI2decode = this.gs1dlURI }
-               				rv=updateCanvas("qrcode",this.gs1dlURI2decode,this.errorCorrection);
-    				}
-
-				    
+					for (c of ["L","M","Q","H"]) {
+						rv[c]=updateCanvas("qrcode",val,c)?.modules;
+					}				    
 				}
 				if (this.whichCode==1) { 
-
-    			    if (this.mode==0) {
 	        			rv= updateCanvas("gs1datamatrix",val,null)?.modules;
-			    	} else {
-				        if (this.gs1els2decode == "") { this.gs1els2decode = this.gs1elementString; }
-	 			        rv= updateCanvas("gs1datamatrix",this.gs1els2decode,null).modules;
-				    }
-
+				}
+				if (this.whichCode==2) { 
+	        			rv= updateCanvas("datamatrix",val,null)?.modules;
 				}
 				
 				return rv;
@@ -1218,16 +1202,6 @@ function percentEncode(el) {
 				return rv;
 			},
 			
-			
-			setMode: function(el) {
-				this.mode=el;
-				var qrc=document.getElementById("symbol2D");
-				if (el==1) {
-					qrc.style.left="0%";
-				} else {
-					qrc.style.left="50%";
-				}
-			},
 			booleanValue: function(el) {
 				return this.booleans[el];
 			}		
