@@ -71,8 +71,9 @@ function gs1measurement(val) {
 	let rv={};
 	let numeric="";
 	let prepad="";
-	if (val.indexOf(".")> -1) {
-		var parts=val.split(".");
+	let strval=""+val;
+	if (strval.indexOf(".")> -1) {
+		var parts=strval.split(".");
 		ndp=parts[1].length;
 		numeric=parts[0]+parts[1];
 	} else {
@@ -266,6 +267,7 @@ input.isOK {background-color: #FFFFFF;}
 		<td class="s4tCode">&nbsp;{{ex.code}}&nbsp;</td>
 		<td></td>
 	</tr>
+	<tr v-if="invalidPriceSpecification(s4tData[ex.code])"><td></td><td colspan="3">^^ {{s4tData[ex.code]}} is invalid.  No more than 15 digit characters in total and no more than 9 decimal places after the decimal point may be specified for the value to encode in AI ({{ex.code}}). Please enter only digits and decimal point - do not use decimal comma and do not indicate a currency using a symbol such as $ or a currency code such as USD.</td></tr>
 	</tbody>
 	
 	
@@ -587,7 +589,7 @@ function percentEncode(el) {
 				kvPairs=[];
 				s4tObj.orderedKeys.forEach(function(k) {
 				
-				
+				let encodable=true;
 				let xc = this.primaryAIobj;
 				
 					if (!(   (k == "10") || (k== "21") || (k== "22")   )) {
@@ -607,9 +609,15 @@ function percentEncode(el) {
 							}
 
 							if (this.s4tObj.obj[k]?.datatype=="gs1:PriceSpecification") {
-								var rv=gs1measurement(s4to[k]);
-								valToEncode = rv.numeric;
-								k=k.replace("n",rv.ndp);
+								let val=s4to[k];
+								let v=invalidPriceSpecification(val);
+								if (!v) {
+									let rv=gs1measurement(val);
+									valToEncode = rv.numeric;
+									k=k.replace("n",rv.ndp);
+								} else {
+									encodable=false;
+								}
 							}
 							
 							
@@ -617,7 +625,7 @@ function percentEncode(el) {
 								valToEncode=encodeURIComponent(s4to[k]);
 							}
 						
-							kvPairs.push(k+"="+valToEncode);
+							if (encodable) { kvPairs.push(k+"="+valToEncode); }
 					
 						}
 					}
@@ -676,7 +684,8 @@ function percentEncode(el) {
 
 				
 					if ((s4to.hasOwnProperty(k)) && (s4to[k] !== "")) {
-						var valToEncode="";
+						let valToEncode="";
+						let encodable=true;
 						if (this.s4tObj.obj[k]?.datatype=="xsd:date") {							
 							valToEncode=gs1date(s4to[k]);
 						}
@@ -690,12 +699,17 @@ function percentEncode(el) {
 						}
 
 						if (this.s4tObj.obj[k]?.datatype=="gs1:PriceSpecification") {
-							var rv=gs1measurement(s4to[k]);
-							valToEncode = rv.numeric;
-							k=k.replace("n",rv.ndp);
+								let val=s4to[k];
+								let v=invalidPriceSpecification(val);
+								if (!v) {
+									let rv=gs1measurement(val);
+									valToEncode = rv.numeric;
+									k=k.replace("n",rv.ndp);
+								} else {
+									encodable=false;
+								}
 						}
 
-						let encodable=true;
 						if (valToEncode ==  "") {
 							// don't percent-encode in element string for non-S4T AIs.
 							valToEncode=s4to[k];
@@ -815,7 +829,9 @@ function percentEncode(el) {
 		
 		},
 		methods: {
-
+			invalidPriceSpecification : function(val) {
+				return invalidPriceSpecification(val);			
+			},
 
 			openSVG : function() {
 			  const win = open(this.imgSVGurl);
@@ -1212,6 +1228,23 @@ function percentEncode(el) {
 		
 		}).mount("#app1");
 
+function invalidPriceSpecification(val) {
+	if (val == undefined) {
+		return false;
+	} else {
+		let strval=""+val+"";
+		console.log("strval = |"+strval+"|");
+		let noDecimal = strval.replaceAll(".","");
+		let re1=/\.\d{10,}$/;
+		let re2=/^\d{16,}$/;
+		let re3=/[^\d\.]+/;
+		if ( (re1.test(strval)) || (re2.test(noDecimal) ||  (re3.test(strval))) ) {
+			return true; 
+		} else {
+			return false;
+		}
+	}
+}
 
 
 </script>
