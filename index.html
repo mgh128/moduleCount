@@ -67,9 +67,10 @@ function gs1dateTime(xsdDateTime) {
 }
 
 function gs1measurement(val) {
-	var ndp=0;
-	var rv={};
-	var numeric="";
+	let ndp=0;
+	let rv={};
+	let numeric="";
+	let prepad="";
 	if (val.indexOf(".")> -1) {
 		var parts=val.split(".");
 		ndp=parts[1].length;
@@ -77,12 +78,14 @@ function gs1measurement(val) {
 	} else {
 		numeric=val;
 	}
-		if (numeric.length < 6) {
+	prepad=numeric;
+	if (numeric.length < 6) {
 		numeric="0".repeat(6-numeric.length)+numeric;
 	}
 	
 	rv.ndp=ndp;
 	rv.sixdigit=numeric;
+	rv.numeric=prepad;
 	return rv;
 }
 
@@ -605,7 +608,7 @@ function percentEncode(el) {
 
 							if (this.s4tObj.obj[k]?.datatype=="gs1:PriceSpecification") {
 								var rv=gs1measurement(s4to[k]);
-								valToEncode = rv.sixdigit;
+								valToEncode = rv.numeric;
 								k=k.replace("n",rv.ndp);
 							}
 							
@@ -688,7 +691,7 @@ function percentEncode(el) {
 
 						if (this.s4tObj.obj[k]?.datatype=="gs1:PriceSpecification") {
 							var rv=gs1measurement(s4to[k]);
-							valToEncode = rv.sixdigit;
+							valToEncode = rv.numeric;
 							k=k.replace("n",rv.ndp);
 						}
 
